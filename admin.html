@@ -89,33 +89,34 @@
       </div>
 
       <!-- PACOTE -->
-<div class="card">
-  <div class="card-title"><div class="icon">⭐</div> Pacote Contratado</div>
-  <div class="form-group">
-    <label>Selecione o Pacote *</label>
-    <select id="package_name" onchange="selectPackage()">
-      <option value="">-- Selecione --</option>
-      <option value="MEMÓRIAS">⭐ MEMÓRIAS — R$ 350,00</option>
-      <option value="MOMENTOS">💎 MOMENTOS — R$ 550,00</option>
-      <option value="ETERNIZE">👑 ETERNIZE — R$ 750,00</option>
-    </select>
-  </div>
-  <div class="form-group">
-    <label>Valor do Pacote (R$)</label>
-    <input type="number" id="package_value" value="0" step="0.01"
-       style="color:var(--gold); font-weight:700;"
-       oninput="updateResumo()">
-  </div>
+      <div class="card">
+        <div class="card-title"><div class="icon">⭐</div> Pacote Contratado</div>
+        <div class="form-group">
+          <label>Selecione o Pacote *</label>
+          <select id="package_name" onchange="selectPackage()">
+            <option value="">-- Selecione --</option>
+            <option value="MEMÓRIAS">⭐ MEMÓRIAS — R$ 350,00</option>
+            <option value="MOMENTOS">💎 MOMENTOS — R$ 550,00</option>
+            <option value="ETERNIZE">👑 ETERNIZE — R$ 750,00</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Valor do Pacote (R$)</label>
+          <input type="number" id="package_value" value="0" step="0.01"
+                 style="color:var(--gold); font-weight:700;"
+                 oninput="updateResumo()">
+        </div>
 
-  <!-- Preview do pacote -->
-<div id="package-preview" style="display:none; margin-top:12px; padding:16px; background:var(--bg-input); border-radius:var(--radius-sm); border:1px solid var(--gold-border);">
-  <p style="font-size:14px; font-weight:700; color:var(--gold); margin-bottom:10px;" id="preview-pkg-name"></p>
-</div>
+        <!-- Preview do pacote -->
+        <div id="package-preview" style="display:none; margin-top:12px; padding:16px; background:var(--bg-input); border-radius:var(--radius-sm); border:1px solid var(--gold-border);">
+          <p style="font-size:14px; font-weight:700; color:var(--gold); margin-bottom:10px;" id="preview-pkg-name"></p>
+        </div>
 
-<div class="form-group" style="margin-top: 12px;">
-  <label>Descrição do Pacote (editável)</label>
-  <textarea id="package_description" rows="8" placeholder="Selecione um pacote acima..." style="line-height:2;"></textarea>
-</div>
+        <div class="form-group" style="margin-top: 12px;">
+          <label>Descrição do Pacote (editável)</label>
+          <textarea id="package_description" rows="8" placeholder="Selecione um pacote acima..." style="line-height:2;"></textarea>
+        </div>
+      </div>
 
       <!-- ADICIONAIS -->
       <div class="card">
@@ -208,7 +209,7 @@
           <p style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Resumo Financeiro</p>
           <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
             <span style="font-size:13px; color:var(--text-secondary);">Pacote:</span>
-            <span style="font-size:13px; color:var(--text-primary);" id="resumo-pacote">R$ 350,00</span>
+            <span style="font-size:13px; color:var(--text-primary);" id="resumo-pacote">R$ 0,00</span>
           </div>
           <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
             <span style="font-size:13px; color:var(--text-secondary);">Adicionais:</span>
@@ -221,7 +222,7 @@
           <div class="divider"></div>
           <div style="display:flex; justify-content:space-between; margin-top:8px;">
             <span style="font-size:15px; font-weight:700; color:var(--gold);">TOTAL:</span>
-            <span style="font-size:15px; font-weight:700; color:var(--gold);" id="resumo-total">R$ 350,00</span>
+            <span style="font-size:15px; font-weight:700; color:var(--gold);" id="resumo-total">R$ 0,00</span>
           </div>
           <div style="display:flex; justify-content:space-between; margin-top:4px;">
             <span style="font-size:12px; color:var(--text-muted);">Entrada:</span>
@@ -229,7 +230,7 @@
           </div>
           <div style="display:flex; justify-content:space-between;">
             <span style="font-size:12px; color:var(--text-muted);">Saldo restante:</span>
-            <span style="font-size:12px; color:var(--text-secondary);" id="resumo-saldo">R$ 300,00</span>
+            <span style="font-size:12px; color:var(--text-secondary);" id="resumo-saldo">R$ 0,00</span>
           </div>
         </div>
       </div>
@@ -281,7 +282,44 @@
     // ===== CONFIG =====
     const SUPABASE_URL = 'https://scwznirvzwrphztvopbz.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjd3puaXJ2endycGh6dHZvcGJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNzI2NzQsImV4cCI6MjA5NTY0ODY3NH0.PLvr547bIEJwjECKxQaoR7lpazs8GbSpLYLMDiGD4Po';
-    const SITE_URL = 'https://contratos-brown.vercel.app/';
+    const SITE_URL = 'https://contratos-brown.vercel.app';
+
+    // ===== PACOTES =====
+    const PACKAGES = {
+      'MEMÓRIAS': {
+        value: 350,
+        emoji: '⭐',
+        description: `• Duração: até 2 (duas) horas de experiência
+• Fotos impressas: ILIMITADAS durante o tempo contratado
+• Mural PREMIUM com decoração temática
+• Caixinha personalizada para o(a) contratante
+• 18 (dezoito) fotos especiais para o contratante pós evento
+• Moldura personalizada com nome/tema do evento
+• Link com todas as fotos enviadas em uma galeria online`
+      },
+      'MOMENTOS': {
+        value: 550,
+        emoji: '💎',
+        description: `• Duração: até 3 (três) horas de experiência
+• Fotos impressas: ILIMITADAS durante o tempo contratado
+• Mural PREMIUM com decoração temática
+• Caixinha personalizada para o(a) contratante
+• 27 (vinte e sete) fotos especiais para o contratante pós evento
+• Moldura personalizada com nome/tema do evento
+• Link com todas as fotos enviadas em uma galeria online`
+      },
+      'ETERNIZE': {
+        value: 750,
+        emoji: '👑',
+        description: `• Duração: até 4 (quatro) horas de experiência
+• Fotos impressas: ILIMITADAS durante o tempo contratado
+• Mural PREMIUM com decoração temática
+• Caixinha personalizada para o(a) contratante
+• 36 (trinta e seis) fotos especiais para o contratante pós evento
+• Moldura personalizada com nome/tema do evento
+• Link com todas as fotos enviadas em uma galeria online`
+      }
+    };
 
     // ===== HELPERS =====
     function generateToken() {
@@ -315,7 +353,7 @@
     }
 
     function formatMoney(v) {
-      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
+      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v || 0);
     }
 
     function formatDate(d) {
@@ -331,60 +369,24 @@
     }
 
     // ===== PACOTES =====
-const PACKAGES = {
-  'MEMÓRIAS': {
-    value: 350,
-    emoji: '⭐',
-    description: `• Duração: até 2 (duas) horas de experiência
-• Fotos impressas: ILIMITADAS durante o tempo contratado
-• Mural PREMIUM com decoração temática
-• Caixinha personalizada para o(a) contratante
-• 18 (dezoito) fotos especiais para o contratante pós evento
-• Moldura personalizada com nome/tema do evento
-• Link com todas as fotos enviadas em uma galeria online`
-  },
-  'MOMENTOS': {
-    value: 550,
-    emoji: '💎',
-    description: `• Duração: até 3 (três) horas de experiência
-• Fotos impressas: ILIMITADAS durante o tempo contratado
-• Mural PREMIUM com decoração temática
-• Caixinha personalizada para o(a) contratante
-• 27 (vinte e sete) fotos especiais para o contratante pós evento
-• Moldura personalizada com nome/tema do evento
-• Link com todas as fotos enviadas em uma galeria online`
-  },
-  'ETERNIZE': {
-    value: 750,
-    emoji: '👑',
-    description: `• Duração: até 4 (quatro) horas de experiência
-• Fotos impressas: ILIMITADAS durante o tempo contratado
-• Mural PREMIUM com decoração temática
-• Caixinha personalizada para o(a) contratante
-• 36 (trinta e seis) fotos especiais para o contratante pós evento
-• Moldura personalizada com nome/tema do evento
-• Link com todas as fotos enviadas em uma galeria online`
-  }
-};
+    function selectPackage() {
+      const sel = document.getElementById('package_name').value;
+      const preview = document.getElementById('package-preview');
 
-function selectPackage() {
-  const sel = document.getElementById('package_name').value;
-  const preview = document.getElementById('package-preview');
+      if (sel && PACKAGES[sel]) {
+        const pkg = PACKAGES[sel];
+        document.getElementById('package_value').value = pkg.value;
+        document.getElementById('preview-pkg-name').textContent = `${pkg.emoji} ${sel}`;
+        document.getElementById('package_description').value = pkg.description;
+        preview.style.display = 'block';
+      } else {
+        document.getElementById('package_value').value = 0;
+        document.getElementById('package_description').value = '';
+        preview.style.display = 'none';
+      }
 
-  if (sel && PACKAGES[sel]) {
-    const pkg = PACKAGES[sel];
-    document.getElementById('package_value').value = pkg.value;
-    document.getElementById('preview-pkg-name').textContent = `${pkg.emoji} ${sel}`;
-    document.getElementById('package_description').value = pkg.description;
-    preview.style.display = 'block';
-  } else {
-    document.getElementById('package_value').value = 0;
-    document.getElementById('package_description').value = '';
-    preview.style.display = 'none';
-  }
-
-  updateResumo();
-}
+      updateResumo();
+    }
 
     // ===== DESLOCAMENTO =====
     let deslocLocal = true;
@@ -420,7 +422,8 @@ function selectPackage() {
     // Listeners para atualizar resumo
     document.addEventListener('DOMContentLoaded', () => {
       ['package_value', 'adicional_valor', 'deslocamento_valor', 'entrada_value'].forEach(id => {
-        document.getElementById(id).addEventListener('input', updateResumo);
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', updateResumo);
       });
       updateResumo();
     });
@@ -439,8 +442,8 @@ function selectPackage() {
     async function createContract() {
       const name = document.getElementById('client_name').value.trim();
       const pkgName = document.getElementById('package_name').value;
-if (!pkgName) { showToast('⚠️ Selecione um pacote'); return; }
-const pkgVal = parseFloat(document.getElementById('package_value').value);
+      if (!pkgName) { showToast('⚠️ Selecione um pacote'); return; }
+      const pkgVal = parseFloat(document.getElementById('package_value').value);
       const eventDate = document.getElementById('event_date').value;
 
       if (!name) { showToast('⚠️ Preencha o nome do contratante'); return; }
@@ -525,100 +528,60 @@ const pkgVal = parseFloat(document.getElementById('package_value').value);
 
     // ===== LISTAR =====
     async function loadContracts() {
-  const container = document.getElementById('contracts-container');
-  container.innerHTML = '<div class="loading"><div class="spinner"></div>Carregando...</div>';
+      const container = document.getElementById('contracts-container');
+      container.innerHTML = '<div class="loading"><div class="spinner"></div>Carregando...</div>';
 
-  try {
-    const contracts = await supaFetch('contracts?order=created_at.desc');
+      try {
+        const contracts = await supaFetch('contracts?order=created_at.desc');
 
-    if (!contracts.length) {
-      container.innerHTML = `
-        <div style="text-align:center; padding:60px 20px; color:var(--text-muted);">
-          <p style="font-size:48px; margin-bottom:16px;">📋</p>
-          <p>Nenhum contrato ainda</p>
-        </div>`;
-      return;
+        if (!contracts.length) {
+          container.innerHTML = `
+            <div style="text-align:center; padding:60px 20px; color:var(--text-muted);">
+              <p style="font-size:48px; margin-bottom:16px;">📋</p>
+              <p>Nenhum contrato ainda</p>
+            </div>`;
+          return;
+        }
+
+        const badges = {
+          pending: '<span class="badge badge-pending">⏳ Pendente</span>',
+          viewed: '<span class="badge badge-viewed">👁️ Visualizado</span>',
+          signed: '<span class="badge badge-signed">✅ Assinado</span>'
+        };
+
+        let html = '<div class="contracts-list">';
+        contracts.forEach(c => {
+          const pkgName = c.package_name || 'Pacote';
+          const eventDate = c.event_date ? formatDate(c.event_date) : '-';
+          const totalVal = c.total_value || 0;
+          const locationName = c.event_location_name || '';
+
+          html += `
+            <div class="contract-card" onclick="showDetails('${c.token}')">
+              <div class="contract-card-info">
+                <h3>${c.client_name}</h3>
+                <p>📦 ${pkgName} • 📅 ${eventDate}</p>
+                <div style="margin-top:8px;">${badges[c.status] || badges.pending}</div>
+              </div>
+              <div style="text-align:right;">
+                <div class="contract-card-value">${formatMoney(totalVal)}</div>
+                <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">
+                  ${locationName}
+                </p>
+              </div>
+            </div>`;
+        });
+        html += '</div>';
+        container.innerHTML = html;
+      } catch (err) {
+        console.error('Erro ao carregar contratos:', err);
+        container.innerHTML = `
+          <div style="text-align:center; padding:40px; color:var(--danger);">
+            <p>❌ Erro ao carregar contratos</p>
+            <p style="font-size:12px; margin-top:8px; color:var(--text-muted);">${err.message}</p>
+          </div>`;
+      }
     }
-
-    const badges = {
-      pending: '<span class="badge badge-pending">⏳ Pendente</span>',
-      viewed: '<span class="badge badge-viewed">👁️ Visualizado</span>',
-      signed: '<span class="badge badge-signed">✅ Assinado</span>'
-    };
-
-    let html = '<div class="contracts-list">';
-    contracts.forEach(c => {
-      const pkgName = c.package_name || 'Pacote';
-      const eventDate = c.event_date ? formatDate(c.event_date) : '-';
-      const totalVal = c.total_value || 0;
-      const locationName = c.event_location_name || '';
-
-      html += `
-        <div class="contract-card" onclick="showDetails('${c.token}')">
-          <div class="contract-card-info">
-            <h3>${c.client_name}</h3>
-            <p>📦 ${pkgName} • 📅 ${eventDate}</p>
-            <div style="margin-top:8px;">${badges[c.status] || badges.pending}</div>
-          </div>
-          <div style="text-align:right;">
-            <div class="contract-card-value">${formatMoney(totalVal)}</div>
-            <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">
-              ${locationName}
-            </p>
-          </div>
-        </div>`;
-    });
-    html += '</div>';
-    container.innerHTML = html;
-  } catch (err) {
-    console.error('Erro ao carregar contratos:', err);
-    container.innerHTML = `
-      <div style="text-align:center; padding:40px; color:var(--danger);">
-        <p>❌ Erro ao carregar contratos</p>
-        <p style="font-size:12px; margin-top:8px; color:var(--text-muted);">${err.message}</p>
-      </div>`;
-  }
-}
-
-    const badges = {
-      pending: '<span class="badge badge-pending">⏳ Pendente</span>',
-      viewed: '<span class="badge badge-viewed">👁️ Visualizado</span>',
-      signed: '<span class="badge badge-signed">✅ Assinado</span>'
-    };
-
-    let html = '<div class="contracts-list">';
-    contracts.forEach(c => {
-      const pkgName = c.package_name || 'Pacote';
-      const eventDate = c.event_date ? formatDate(c.event_date) : '-';
-      const totalVal = c.total_value || 0;
-      const locationName = c.event_location_name || '';
-
-      html += `
-        <div class="contract-card" onclick="showDetails('${c.token}')">
-          <div class="contract-card-info">
-            <h3>${c.client_name}</h3>
-            <p>📦 ${pkgName} • 📅 ${eventDate}</p>
-            <div style="margin-top:8px;">${badges[c.status] || badges.pending}</div>
-          </div>
-          <div style="text-align:right;">
-            <div class="contract-card-value">${formatMoney(totalVal)}</div>
-            <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">
-              ${locationName}
-            </p>
-          </div>
-        </div>`;
-    });
-    html += '</div>';
-    container.innerHTML = html;
-  } catch (err) {
-    console.error('Erro ao carregar contratos:', err);
-    container.innerHTML = `
-      <div style="text-align:center; padding:40px; color:var(--danger);">
-        <p>❌ Erro ao carregar contratos</p>
-        <p style="font-size:12px; margin-top:8px; color:var(--text-muted);">${err.message}</p>
-      </div>`;
-  }
-}
 
     // ===== DETALHES =====
     async function showDetails(token) {
@@ -635,7 +598,7 @@ const pkgVal = parseFloat(document.getElementById('package_value').value);
           <div class="info-grid" style="margin-bottom:16px;">
             <div class="info-item"><div class="info-label">Cliente</div><div class="info-value">${c.client_name}</div></div>
             <div class="info-item"><div class="info-label">Status</div><div class="info-value">${statusMap[c.status]}</div></div>
-            <div class="info-item"><div class="info-label">Pacote</div><div class="info-value">${c.package_name}</div></div>
+            <div class="info-item"><div class="info-label">Pacote</div><div class="info-value">${c.package_name || '-'}</div></div>
             <div class="info-item"><div class="info-label">Evento</div><div class="info-value">${formatDate(c.event_date)}</div></div>
             <div class="info-item"><div class="info-label">Total</div><div class="info-value highlight">${formatMoney(c.total_value)}</div></div>
             <div class="info-item"><div class="info-label">Entrada</div><div class="info-value">${formatMoney(c.entrada_value)}</div></div>
