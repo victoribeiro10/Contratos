@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contrato - Entre Clicks</title>
+  <link rel="stylesheet" href="contract.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body>
+
+  <!-- LOADING -->
+  <div id="loading-screen">
+    <div class="loading" style="padding-top:100px;">
+      <div class="spinner"></div>
+      <p>Carregando contrato...</p>
+    </div>
+  </div>
+
+  <!-- CONTRATO -->
+  <div id="contract-screen" style="display:none;">
+
+    <div class="contract-header">
+      <div class="company-logo">EC</div>
+      <div class="company-name">Entre Clicks</div>
+      <div class="contract-title">Contrato de Prestação de Serviços</div>
+    </div>
+
+    <div class="container">
+
+      <!-- DADOS CONTRATADA -->
+      <div class="card">
+        <div class="card-title"><div class="icon">⚡</div> Contratada</div>
+        <div class="info-grid">
+          <div class="info-item full">
+            <div class="info-label">Empresa</div>
+            <div class="info-value">Entre Clicks Experiência Fotográfica</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Responsável</div>
+            <div class="info-value">Victor da Costa Ribeiro</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Contato</div>
+            <div class="info-value">(28) 99928-1772</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DADOS CONTRATANTE -->
+      <div class="card">
+        <div class="card-title"><div class="icon">👤</div> Contratante</div>
+        <div class="info-grid">
+          <div class="info-item full">
+            <div class="info-label">Nome</div>
+            <div class="info-value" id="v-name"></div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">CPF</div>
+            <div class="info-value" id="v-cpf"></div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Contato</div>
+            <div class="info-value" id="v-phone"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EVENTO -->
+      <div class="card">
+        <div class="card-title"><div class="icon">🎉</div> Evento</div>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Data</div>
+            <div class="info-value" id="v-event-date"></div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Horário</div>
+            <div class="info-value" id="v-event-time"></div>
+          </div>
+          <div class="info-item full">
+            <div class="info-label">Local</div>
+            <div class="info-value" id="v-event-location"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PACOTE -->
+      <div class="card">
+        <div class="card-title"><div class="icon">⭐</div> Pacote Contratado</div>
+        <div style="padding:14px; background:var(--bg-input); border-radius:var(--radius-sm); border:1px solid var(--gold-border); margin-bottom:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:16px; font-weight:700; color:var(--gold);" id="v-pkg-name"></span>
+            <span style="font-size:18px; font-weight:800; color:var(--gold);" id="v-pkg-value"></span>
+          </div>
+        </div>
+        <div style="font-size:13px; color:var(--text-secondary); line-height:2; white-space:pre-line;" id="v-pkg-desc"></div>
+      </div>
+
+      <!-- ADICIONAIS -->
+      <div class="card" id="v-adicionais-card" style="display:none;">
+        <div class="card-title"><div class="icon">➕</div> Adicionais</div>
+        <div id="v-adicionais"></div>
+      </div>
+
+      <!-- VALORES -->
+      <div class="card">
+        <div class="card-title"><div class="icon">💰</div> Valores e Pagamento</div>
+        <div id="v-valores"></div>
+      </div>
+
+      <!-- CLÁUSULAS -->
+      <div class="card">
+        <div class="card-title"><div class="icon">📜</div> Termos e Condições</div>
+        <div class="contract-text" id="v-clausulas"></div>
+      </div>
+
+      <!-- ACEITES -->
+      <div class="card">
+        <div class="card-title"><div class="icon">✋</div> Autorizações</div>
+
+        <div style="margin-bottom:20px;">
+          <p style="font-size:13px; font-weight:600; margin-bottom:6px; color:var(--text-primary);">
+            📸 Autorização de uso de imagem
+          </p>
+          <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">
+            Autorizo a CONTRATADA a utilizar imagens do evento (setup, mural, fotos gerais SEM foco em rostos identificáveis) para divulgação em redes sociais, site, materiais promocionais e portfólio profissional.
+          </p>
+          <div class="radio-group">
+            <div class="radio-option" onclick="selectRadio(this, 'consent_image', true)">
+              <input type="radio" name="consent_image" value="true">
+              <label>✅ Autorizo</label>
+            </div>
+            <div class="radio-option" onclick="selectRadio(this, 'consent_image', false)">
+              <input type="radio" name="consent_image" value="false">
+              <label>❌ Não autorizo</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="consent-group">
+          <div class="consent-item" onclick="toggleConsent(this)">
+            <input type="checkbox" id="consent_whatsapp">
+            <div class="consent-label">
+              📱 Aceito receber comunicações por WhatsApp
+              <small>Atualizações sobre o serviço e novidades da Entre Clicks</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACEITE OBRIGATÓRIO -->
+      <div class="card">
+        <div class="card-title"><div class="icon">📝</div> Aceite do Contrato <span class="consent-required">*</span></div>
+        <div class="consent-group">
+          <div class="consent-item" onclick="toggleConsent(this)" id="main-consent">
+            <input type="checkbox" id="consent_main">
+            <div class="consent-label">
+              <strong>Declaro que li, entendi e concordo integralmente com todos os termos e condições estabelecidos neste contrato.</strong>
+              <small>Este aceite é obrigatório para prosseguir</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ASSINATURA -->
+      <div class="card">
+        <div class="card-title"><div class="icon">✍️</div> Assinatura Digital</div>
+        <div class="form-row" style="margin-bottom:16px;">
+          <div class="form-group">
+            <label>Nome Completo *</label>
+            <input type="text" id="sign_name" placeholder="Seu nome completo">
+          </div>
+          <div class="form-group">
+            <label>CPF *</label>
+            <input type="text" id="sign_cpf" placeholder="000.000.000-00">
+          </div>
+        </div>
+        <p style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">
+          Desenhe sua assinatura abaixo:
+        </p>
+        <div class="signature-area">
+          <div class="signature-pad-container" id="sig-container">
+            <canvas id="signature-pad"></canvas>
+            <div class="signature-placeholder" id="sig-placeholder">✍️ Assine aqui</div>
+          </div>
+          <div class="signature-actions">
+            <button class="btn-clear" onclick="clearSignature()">🗑️ Limpar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTÃO -->
+      <button class="btn-primary btn-success" id="btn-sign" onclick="signContract()">
+        ✅ Aceitar e Assinar Contrato
+      </button>
+
+      <p style="text-align:center; font-size:11px; color:var(--text-muted); margin-top:12px; padding-bottom:10px;">
+        Ao assinar, serão registrados data, hora, IP e dispositivo.
+      </p>
+      <div class="contract-footer">Powered by <span>Entre Clicks</span> ⚡</div>
+    </div>
+  </div>
+
+  <!-- SUCESSO -->
+  <div id="success-screen" class="success-screen">
+    <div class="contract-header">
+      <div class="company-logo">EC</div>
+      <div class="company-name">Entre Clicks</div>
+      <div class="contract-title">Contrato de Prestação de Serviços</div>
+    </div>
+    <div class="container">
+      <div class="success-icon">✅</div>
+      <div class="success-title">Contrato Assinado!</div>
+      <div class="success-message">
+        <p>Seu contrato foi assinado com sucesso.</p>
+        <p style="margin-top:8px;">Obrigado pela confiança! ⚡📸</p>
+        <p style="margin-top:16px; font-size:12px; color:var(--text-muted);">
+          Assinado em: <span id="signed-date"></span>
+        </p>
+      </div>
+      <div class="contract-footer" style="margin-top:40px;">Powered by <span>Entre Clicks</span> ⚡</div>
+    </div>
+  </div>
+
+  <!-- JÁ ASSINADO -->
+  <div id="already-signed-screen" style="display:none;">
+    <div class="contract-header">
+      <div class="company-logo">EC</div>
+      <div class="company-name">Entre Clicks</div>
+      <div class="contract-title">Contrato de Prestação de Serviços</div>
+    </div>
+    <div class="container">
+      <div class="card already-signed">
+        <div class="icon">✅</div>
+        <h2 style="color:var(--success); margin-bottom:8px;">Contrato já assinado</h2>
+        <p style="color:var(--text-muted); font-size:14px;">Este contrato já foi aceito anteriormente.</p>
+        <p style="color:var(--text-muted); margin-top:8px; font-size:12px;" id="already-signed-info"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ERRO -->
+  <div id="error-screen" style="display:none;">
+    <div class="contract-header">
+      <div class="company-logo">EC</div>
+      <div class="company-name">Entre Clicks</div>
+      <div class="contract-title">Contrato de Prestação de Serviços</div>
+    </div>
+    <div class="container" style="text-align:center; padding-top:40px;">
+      <p style="font-size:48px; margin-bottom:16px;">😕</p>
+      <h2>Contrato não encontrado</h2>
+      <p style="color:var(--text-muted); margin-top:8px;">O link pode estar incorreto ou expirado.</p>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ===== CONFIG =====
+    const SUPABASE_URL = 'https://scwznirvzwrphztvopbz.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjd3puaXJ2endycGh6dHZvcGJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNzI2NzQsImV4cCI6MjA5NTY0ODY3NH0.PLvr547bIEJwjECKxQaoR7lpazs8GbSpLYLMDiGD4Po';
+    const SITE_URL = 'https://entreclicks-projects.vercel.app';
+
+    let contractData = null;
+    let signaturePad = null;
+    let isDrawing = false;
+    let hasSignature = false;
+    let consents = { consent_image: null };
+
+    // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = new URLSearchParams(window.location.search).get('token');
+      if (!token) { showScreen('error'); return; }
+      loadContract(token);
+    });
+
+    // ===== LOAD =====
+    async function loadContract(token) {
+      try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/contracts?token=eq.${token}`, {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+        });
+        const data = await res.json();
+        if (!data || !data.length) { showScreen('error'); return; }
+        contractData = data[0];
+
+        if (contractData.status === 'signed') {
+          document.getElementById('already-signed-info').textContent =
+            `Assinado em: ${new Date(contractData.signed_at).toLocaleString('pt-BR')}`;
+          showScreen('already-signed');
+          return;
+        }
+
+        if (contractData.status === 'pending') {
+          fetch(`${SUPABASE_URL}/rest/v1/contracts?token=eq.${token}`, {
+            method: 'PATCH',
+            headers: {
+              'apikey': SUPABASE_KEY,
+              'Authorization': `Bearer ${SUPABASE_KEY}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status: 'viewed', viewed_at: new Date().toISOString() })
+          });
+        }
+
+        fillContract();
+        initSignaturePad();
+        showScreen('contract');
+      } catch (err) {
+        console.error(err);
+        showScreen('error');
+      }
+    }
+
+    // ===== PREENCHER =====
+    function fillContract() {
+      const c = contractData;
+
+      document.getElementById('v-name').textContent = c.client_name;
+      document.getElementById('v-cpf').textContent = c.client_cpf || '-';
+      document.getElementById('v-phone').textContent = c.client_phone || '-';
+
+      document.getElementById('v-event-date').textContent = formatDate(c.event_date);
+      document.getElementById('v-event-time').textContent =
+        (c.event_time_start && c.event_time_end) ? `${c.event_time_start} às ${c.event_time_end}` : '-';
+      document.getElementById('v-event-location').textContent =
+        `${c.event_location_name || ''} — ${c.event_location_address || ''}, ${c.event_location_city || ''}`;
+
+      document.getElementById('v-pkg-name').textContent = c.package_name;
+      document.getElementById('v-pkg-value').textContent = formatMoney(c.package_value);
+      document.getElementById('v-pkg-desc').textContent = c.package_description || '';
+
+      // Adicionais
+      let adicionaisHtml = '';
+      if (c.adicional_livro) adicionaisHtml += '<p style="font-size:13px; color:var(--text-secondary); padding:6px 0;">📖 Livro de Recordações — R$ 100,00</p>';
+      if (c.adicional_ima) adicionaisHtml += '<p style="font-size:13px; color:var(--text-secondary); padding:6px 0;">🧲 Imã Memória — R$ 50,00</p>';
+      if (c.adicional_hora_extra) adicionaisHtml += '<p style="font-size:13px; color:var(--text-secondary); padding:6px 0;">⏰ Hora Extra — R$ 180,00/h</p>';
+      if (c.adicional_outros) adicionaisHtml += `<p style="font-size:13px; color:var(--text-secondary); padding:6px 0;">📌 ${c.adicional_outros}</p>`;
+
+      if (adicionaisHtml) {
+        document.getElementById('v-adicionais-card').style.display = 'block';
+        document.getElementById('v-adicionais').innerHTML = adicionaisHtml;
+      }
+
+      // Valores
+      let valHtml = `
+        <div style="padding:14px; background:var(--bg-input); border-radius:var(--radius-sm); border:1px solid var(--border);">
+          <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+            <span style="font-size:13px; color:var(--text-secondary);">Pacote ${c.package_name}:</span>
+            <span style="font-size:13px; color:var(--text-primary);">${formatMoney(c.package_value)}</span>
+          </div>`;
+
+      if (c.adicional_valor > 0) {
+        valHtml += `
+          <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+            <span style="font-size:13px; color:var(--text-secondary);">Adicionais:</span>
+            <span style="font-size:13px; color:var(--text-primary);">${formatMoney(c.adicional_valor)}</span>
+          </div>`;
+      }
+
+      if (c.deslocamento_valor > 0) {
+        valHtml += `
+          <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+            <span style="font-size:13px; color:var(--text-secondary);">Deslocamento${c.deslocamento_distancia ? ` (${c.deslocamento_distancia})` : ''}:</span>
+            <span style="font-size:13px; color:var(--text-primary);">${formatMoney(c.deslocamento_valor)}</span>
+          </div>`;
+      }
+
+      valHtml += `
+          <div class="divider"></div>
+          <div style="display:flex; justify-content:space-between; margin-top:8px;">
+            <span style="font-size:16px; font-weight:700; color:var(--gold);">TOTAL:</span>
+            <span style="font-size:16px; font-weight:700; color:var(--gold);">${formatMoney(c.total_value)}</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-top:6px;">
+            <span style="font-size:12px; color:var(--text-muted);">Entrada (na assinatura):</span>
+            <span style="font-size:12px; color:var(--text-secondary);">${formatMoney(c.entrada_value)}</span>
+          </div>
+          <div style="display:flex; justify-content:space-between;">
+            <span style="font-size:12px; color:var(--text-muted);">Saldo (até 7 dias antes):</span>
+            <span style="font-size:12px; color:var(--text-secondary);">${formatMoney(c.saldo_value)}</span>
+          </div>
+          <div style="margin-top:8px;">
+            <span style="font-size:12px; color:var(--text-muted);">Forma: <strong style="color:var(--text-primary);">${c.payment_method || '-'}</strong></span>
+          </div>
+        </div>`;
+      document.getElementById('v-valores').innerHTML = valHtml;
+
+      // Preencher assinatura
+      if (c.client_name) document.getElementById('sign_name').value = c.client_name;
+      if (c.client_cpf) document.getElementById('sign_cpf').value = c.client_cpf;
+
+      // CLÁUSULAS COMPLETAS
+      document.getElementById('v-clausulas').innerHTML = generateClauses(c);
+    }
+
+    // ===== CLÁUSULAS =====
+    function generateClauses(c) {
+      return `
+        <div class="clause">
+          <span class="clause-number">Cláusula 1ª — Do Objeto</span>
+          1.1. A CONTRATADA prestará serviço de fotografia interativa com impressão instantânea de fotos em formato polaroid (9x6cm), com envio das imagens realizado pelos próprios convidados via QR Code, durante o evento contratado.<br><br>
+          1.2. O serviço inclui:<br>
+          &nbsp;&nbsp;a) Estação de trabalho montada no local do evento;<br>
+          &nbsp;&nbsp;b) Impressão instantânea das fotos enviadas;<br>
+          &nbsp;&nbsp;c) Mural de exposição das fotos durante o evento;<br>
+          &nbsp;&nbsp;d) Equipe técnica composta por 2 (dois) profissionais;<br>
+          &nbsp;&nbsp;e) Todo o material de impressão (papel e tinta);<br>
+          &nbsp;&nbsp;f) Itens específicos do pacote contratado.
+        </div>
+
+        <div class="clause">
+          <span class="clause-number">Cláusula 2ª — Do Pacote Contratado</span>
+          Pacote: <strong>${c.package_name}</strong> — ${formatMoney(c.package_value)}<br><br>
+          ${c.package_description ? c.package_description.replace(/\n/g, '<br>') : ''}
+          ${c.adicional_livro || c.adicional_ima || c.adicional_hora_extra || c.adicional_outros ? '<br><br><strong>Adicionais contratados:</strong><br>' : ''}
+          ${c.adicional_livro ? '☑ Livro de Recordações — R$ 100,00<br>' : ''}
+          ${c.adicional_ima ? '☑ Imã Memória — R$ 50,00<br>' : ''}
+          ${c.adicional_hora_extra ? '☑ Hora Extra — R$ 180,00/h<br>' : ''}
+          ${c.adicional_outros ? `☑ ${c.adicional_outros}<br>` : ''}
+        </div>
+
+        <div class="clause">
+          <span class="clause-number">Cláusula 3ª — Da Data, Horário e Local</span>
+          Data: <strong>${formatDate(c.event_date)}</strong><br>
+          Horário: <strong>${c.event_time_start || '-'} às ${c.event_time_end || '-'}</strong><br>
+          Local: <strong>${c.event_location_name || '-'}</strong><br>
+          Endereço: ${c.event_location_address || '-'}, ${c.event_location_city || '-'}<br><br>
+          A equipe chegará com antecedência mínima de 30 minutos para montagem.
+          ${!c.deslocamento_local ? `<br><br>Deslocamento: ${c.deslocamento_distancia || '-'} — ${formatMoney(c.deslocamento_valor)}` : '<br><br>Deslocamento: Cachoeiro de Itapemirim — Sem taxa'}
+        </div>
+
+        <div class="clause">
+          <span class="clause-number">Cláusula 4ª — Do Valor e Pagamento</span>
+          Valor total: <strong>${formatMoney(c.total_value)}</strong><br>
+          Entrada: <strong>${formatMoney(c.entrada_value)}</strong> (na assinatura do contrato)<br>
+          Saldo: <strong>${formatMoney(c.saldo_value)}</strong> (até 7 dias antes do evento)<br>
+          Forma: <strong>${c.payment_method || '-'}</strong><br><br>
+          <strong>Dados PIX:</strong><br>
+          Chave: entreclickss@gmail.com<br>
+          Beneficiário: Victor da Costa Ribeiro<br>
+          Banco: InfinityPay<br><br>
+          ⚠️ O NÃO PAGAMENTO do saldo até 7 dias antes do evento poderá acarretar em CANCELAMENTO DA RESERVA, sem reembolso da entrada.
+        </div>
+
+        <div class="clause">
+          <span class="clause-number">Cláusula 5ª — Obrigações da Contratada</span>
+          5.1. Chegar ao local com antecedência mínima de 30 minutos;<br>
+          5.2. Montar e testar todo o equipamento antes do início;<br>
+          5.3. Manter equipe uniformizada e apresentável;<br>
+          5.4. Manter equipamento reserva (backup) em caso de falha técnica;<br>
+          5.5. Realizar impressões conforme o tempo contratado;<br>
+          5.6. Deixar o mural montado até o final do evento;<br>
+          5.7. Entregar as fotos especiais e caixinha personalizada em até 15 dias após o evento;<br>
+          5.8. Manter conduta profissional e cordial com todos os convidados.
+        </div>
+
+        <div class="clause">
+          <span class="clause-number">Cláusula 6ª — Obrigações do(a) Contratante</span>
+          6.1. Fornecer informações necessárias com no mínimo 15 dias de antecedência;<br>
+          6.2. Garantir no local:<br>
+          &nbsp;&nbsp;a) Espaço mínimo de 1,5m x 1,5m;<br>
+          &nbsp;&nbsp;b) 1 tomada 110v ou 220v a até 5m da estação;<br>
+          &nbsp;&nbsp;c) Local COBERTO;<br>
+          &nbsp;&nbsp;d) Acesso 30 minutos antes para montagem;<br>
+          &nbsp;&nbsp;e) Conexão Wi-Fi ou sinal de celular estável.<br>
+          6.3. Realizar os pagamentos conforme Cláusula 4;<br>
+          6.4. Comunicar alterações com antecedência mínima de 48 horas.
+        </div>
+
+        <div class="clause">
+          <span class="clause-number">Cláusula 7ª — Política de Cancelamento</span>
+          <strong>Pelo(a) Contratante:</strong><br>
+          a) Mais de 30 dias: reembolso integral, descontada taxa de 20%;<br>
+          b) 15 a 30 dias: perda de 50% do valor pago;<br>
+          c) 7 a 14 dias: perda de 100% do valor pago;<br>
+          d) Menos de 7 dias: perda de 100% + cobrança do saldo.<br><br>
+          <strong>Pela Contratada:</strong><br>
+          Reembolso integral ou reagendamento sem custo, a critério do(a) contratante.
+        </div>
+
+        <div class="clause">
+          <span class="clause-number">Cláusula 8ª — Política de Adiamento</span>
+          Adiamento sem custo se:<br>
+          a) Solicitação com mínimo de 15 dias de antecedência;<br>
+          b) Nova data com disponibilidade na agenda;<br>
+          c) Nova data dentro de 6 meses da original.<br><br>
+          Fora dessas condições será tratado como cancelamento (Cláusula 7).
+        </div>
+
+        <div class="clause">
+          <span class="clause-number">Cláusula 9ª — Direitos de Imagem</span>
+          9.1. O uso de imagens do evento (setup, mural, fotos gerais SEM foco em rostos) depende da autorização do(a) contratante na seção de aceites abaixo.<br>
+          9.2. As fotos entregues aos convidados são de propriedade dos mesmos.<br>
+          9.3. A CONTRATADA NUNCA divulgará imagens que exponham menores de idade sem autorização dos responsáveis.
+        </div>
+
+        <div class="clause">
+          <span class="clause-number">Cláusula 10ª — Imprevistos e Força Maior</span>
+          Considera-se força maior: desastres naturais, problemas mecânicos graves, doença grave da equipe, restrições sanitárias/legais. Em caso de força maior comprovada, as partes negociarão reagendamento ou reembolso integral.
+        </div>
+
+        <div class="clause">
+          <span class="clause-number">Cláusula 11ª — Limitações de Responsabilidade</span>
+          A CONTRATADA NÃO se responsabiliza por: fotos enviadas com má qualidade, sinal deficiente no local, interrupções de energia, atrasos por trânsito extraordinário, danos por terceiros ao equipamento.<br><br>
+          O(a) CONTRATANTE se responsabiliza por: danos ao equipamento por convidados, uso indevido da estação, omissão de informações essenciais.
+        </div>
+
+        <div class="clause">
+          <span class="clause-number">Cláusula 12ª — Disposições Gerais</span>
+          12.1. Este contrato passa a valer a partir do aceite digital e pagamento da entrada.<br>
+          12.2. Qualquer alteração deve ser feita por escrito e acordada entre as partes.<br>
+          12.3. Contrato firmado em conformidade com o Código Civil (Lei 10.406/2002) e CDC (Lei 8.078/1990).
+        </div>
+
+        <div class="clause">
+          <span class="clause-number">Cláusula 13ª — Do Foro</span>
+          Fica eleito o foro da Comarca de Cachoeiro de Itapemirim — ES para dirimir quaisquer controvérsias.
+        </div>
+
+        ${c.notes ? `
+        <div class="clause">
+          <span class="clause-number">Observações Adicionais</span>
+          ${c.notes}
+        </div>` : ''}
+      `;
+    }
+
+    // ===== SIGNATURE PAD =====
+    function initSignaturePad() {
+      const canvas = document.getElementById('signature-pad');
+      const container = document.getElementById('sig-container');
+      const ctx = canvas.getContext('2d');
+
+      function resize() {
+        const r = container.getBoundingClientRect();
+        canvas.width = r.width - 8;
+        canvas.height = 180;
+        ctx.strokeStyle = '#C9A94E';
+        ctx.lineWidth = 2.5;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      function getPos(e) {
+        const r = canvas.getBoundingClientRect();
+        const t = e.touches ? e.touches[0] : e;
+        return { x: t.clientX - r.left, y: t.clientY - r.top };
+      }
+      function start(e) { e.preventDefault(); isDrawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); document.getElementById('sig-placeholder').style.display = 'none'; }
+      function draw(e) { e.preventDefault(); if (!isDrawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); hasSignature = true; }
+      function end(e) { e.preventDefault(); isDrawing = false; if (hasSignature) container.classList.add('signed'); }
+
+      canvas.addEventListener('mousedown', start);
+      canvas.addEventListener('mousemove', draw);
+      canvas.addEventListener('mouseup', end);
+      canvas.addEventListener('mouseleave', end);
+      canvas.addEventListener('touchstart', start, { passive: false });
+      canvas.addEventListener('touchmove', draw, { passive: false });
+      canvas.addEventListener('touchend', end, { passive: false });
+      signaturePad = { canvas, ctx };
+    }
+
+    function clearSignature() {
+      signaturePad.ctx.clearRect(0, 0, signaturePad.canvas.width, signaturePad.canvas.height);
+      hasSignature = false;
+      document.getElementById('sig-container').classList.remove('signed');
+      document.getElementById('sig-placeholder').style.display = 'block';
+    }
+
+    // ===== HELPERS =====
+    function selectRadio(el, name, value) {
+      consents[name] = value;
+      el.parentElement.querySelectorAll('.radio-option').forEach(o => o.classList.remove('selected', 'selected-no'));
+      el.classList.add(value ? 'selected' : 'selected-no');
+    }
+
+    function toggleConsent(el) {
+      const cb = el.querySelector('input[type="checkbox"]');
+      cb.checked = !cb.checked;
+      el.classList.toggle('checked', cb.checked);
+    }
+
+    // ===== ASSINAR =====
+    async function signContract() {
+      const mainOk = document.getElementById('consent_main').checked;
+      const name = document.getElementById('sign_name').value.trim();
+      const cpf = document.getElementById('sign_cpf').value.trim();
+
+      if (!mainOk) { showToast('⚠️ Aceite os termos do contrato'); return; }
+      if (!name) { showToast('⚠️ Preencha seu nome'); return; }
+      if (!cpf) { showToast('⚠️ Preencha seu CPF'); return; }
+      if (consents.consent_image === null) { showToast('⚠️ Selecione se autoriza uso de imagem'); return; }
+      if (!hasSignature) { showToast('⚠️ Faça sua assinatura'); return; }
+
+      const btn = document.getElementById('btn-sign');
+      btn.disabled = true;
+      btn.innerHTML = '⏳ Processando...';
+
+      try {
+        let ip = '-';
+        try { ip = (await (await fetch('https://api.ipify.org?format=json')).json()).ip; } catch(e) {}
+
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/contracts?token=eq.${contractData.token}`, {
+          method: 'PATCH',
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+          },
+          body: JSON.stringify({
+            status: 'signed',
+            consent_image_use: consents.consent_image,
+            consent_whatsapp: document.getElementById('consent_whatsapp').checked,
+            signature_data: signaturePad.canvas.toDataURL('image/png'),
+            signed_name: name,
+            signed_cpf: cpf,
+            signed_at: new Date().toISOString(),
+            signed_ip: ip,
+            signed_device: navigator.userAgent.substring(0, 200)
+          })
+        });
+
+        if (!res.ok) throw new Error('Erro');
+        document.getElementById('signed-date').textContent = new Date().toLocaleString('pt-BR');
+        showScreen('success');
+      } catch (err) {
+        console.error(err);
+        showToast('❌ Erro ao assinar');
+        btn.disabled = false;
+        btn.innerHTML = '✅ Aceitar e Assinar Contrato';
+      }
+    }
+
+    function showScreen(s) {
+      document.getElementById('loading-screen').style.display = 'none';
+      document.getElementById('contract-screen').style.display = s === 'contract' ? 'block' : 'none';
+      document.getElementById('success-screen').style.display = s === 'success' ? 'block' : 'none';
+      document.getElementById('already-signed-screen').style.display = s === 'already-signed' ? 'block' : 'none';
+      document.getElementById('error-screen').style.display = s === 'error' ? 'block' : 'none';
+    }
+
+    function formatMoney(v) { return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v); }
+    function formatDate(d) { if (!d) return '-'; return new Date(d + 'T00:00:00').toLocaleDateString('pt-BR'); }
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+  </script>
+
+</body>
+</html>
