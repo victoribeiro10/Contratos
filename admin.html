@@ -1197,8 +1197,21 @@ c) Envio de aceite digital ou assinatura eletrônica.
           }
         }
 
-        y += 20;
-        checkPageBreak(30);
+                y += 20;
+        checkPageBreak(60);
+
+        // Assinatura da contratada (imagem)
+        if (assinaturaImg) {
+          try {
+            const assLargura = 70;
+            const assAltura = 30;
+            doc.addImage(assinaturaImg, 'PNG', pageWidth - margin - assLargura, y, assLargura, assAltura);
+            y += assAltura + 2;
+          } catch(e) {
+            console.error('Erro ao adicionar assinatura:', e);
+          }
+        }
+
         doc.setDrawColor(50, 50, 50);
         doc.setLineWidth(0.3);
         doc.line(pageWidth - margin - 80, y, pageWidth - margin, y);
