@@ -7,8 +7,14 @@
   <link rel="stylesheet" href="contract.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
 
-  <!-- Biblioteca para gerar PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    @keyframes shimmerBar {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+  </style>
 </head>
 <body>
 
@@ -258,28 +264,19 @@
           </div>
         </div>
 
-                <button class="btn-primary" id="btn-gerar" onclick="createContract()">
+        <button class="btn-primary" id="btn-gerar" onclick="createContract()">
           Gerar Contrato
         </button>
 
         <!-- BARRA DE LOADING -->
         <div id="loading-bar" style="display:none; margin-top: 12px;">
-          <div style="text-align: center; font-family: 'Playfair Display', serif; font-style: italic; font-size: 12px; color: var(--dourado-claro); letter-spacing: 2px; margin-bottom: 8px;" id="loading-message">
+          <div style="text-align: center; font-family: 'Playfair Display', serif; font-style: italic; font-size: 12px; color: var(--dourado-claro); letter-spacing: 2px; margin-bottom: 8px; transition: opacity 0.15s;" id="loading-message">
             Gerando contrato...
           </div>
           <div style="width: 100%; height: 4px; background: rgba(212, 175, 122, 0.15); border-radius: 10px; overflow: hidden; position: relative;">
-            <div id="loading-fill" style="height: 100%; width: 0%; background: linear-gradient(90deg, var(--dourado-escuro), var(--dourado), var(--dourado-claro)); border-radius: 10px; transition: width 0.4s ease; position: relative; overflow: hidden;">
-              <div style="content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: shimmerBar 1.5s infinite;"></div>
-            </div>
+            <div id="loading-fill" style="height: 100%; width: 0%; background: linear-gradient(90deg, var(--dourado-escuro), var(--dourado), var(--dourado-claro)); border-radius: 10px; transition: width 0.4s ease; position: relative; overflow: hidden;"></div>
           </div>
         </div>
-
-        <style>
-          @keyframes shimmerBar {
-            0% { left: -100%; }
-            100% { left: 100%; }
-          }
-        </style>
 
         <div id="generated-link" style="display:none; margin-top: 16px;">
           <div class="card" style="border-color: var(--dourado);">
@@ -320,15 +317,14 @@
   </div>
 
   <div class="toast" id="toast"></div>
-
-  <script>
+    <script>
     // ===== CONFIG =====
     const ADMIN_PASSWORD = 'admin';
     const SUPABASE_URL = 'https://scwznirvzwrphztvopbz.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjd3puaXJ2endycGh6dHZvcGJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNzI2NzQsImV4cCI6MjA5NTY0ODY3NH0.PLvr547bIEJwjECKxQaoR7lpazs8GbSpLYLMDiGD4Po';
     const SITE_URL = 'https://contratos-brown.vercel.app';
     const LOGO_HORIZONTAL_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/object/public/logos/logo-horizontal.png';
-const ASSINATURA_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/object/public/logos/assinatura-victor.png';
+    const ASSINATURA_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/object/public/logos/assinatura-victor.png';
 
     // ===== LOGIN =====
     function checkLogin() {
@@ -515,7 +511,7 @@ const ASSINATURA_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/obje
       if (tab === 'list') loadContracts();
     }
 
-        async function createContract() {
+    async function createContract() {
       const name = document.getElementById('client_name').value.trim();
       const pkgName = document.getElementById('package_name').value;
       if (!pkgName) { showToast('Selecione um pacote'); return; }
@@ -566,7 +562,7 @@ const ASSINATURA_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/obje
         status: 'pending'
       };
 
-      // ===== BARRA DE LOADING =====
+      // BARRA DE LOADING
       const btn = document.getElementById('btn-gerar');
       const loadingBar = document.getElementById('loading-bar');
       const loadingFill = document.getElementById('loading-fill');
@@ -598,7 +594,6 @@ const ASSINATURA_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/obje
         }
       }
 
-      // Simulação de progresso
       let progresso = 0;
       const interval = setInterval(() => {
         progresso += Math.random() * 8;
@@ -620,7 +615,6 @@ const ASSINATURA_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/obje
         document.getElementById('contract-link').value = link;
         document.getElementById('generated-link').style.display = 'block';
 
-        // Esconde a barra de loading
         loadingBar.style.display = 'none';
         loadingFill.style.width = '0%';
         btn.disabled = false;
@@ -633,59 +627,6 @@ const ASSINATURA_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/obje
         loadingBar.style.display = 'none';
         loadingFill.style.width = '0%';
         btn.disabled = false;
-        showToast('Erro ao criar contrato');
-      }
-    }
-
-      const adicVal = parseFloat(document.getElementById('adicional_valor').value) || 0;
-      const deslocVal = parseFloat(document.getElementById('deslocamento_valor').value) || 0;
-      const entradaVal = parseFloat(document.getElementById('entrada_value').value) || 0;
-      const totalVal = pkgVal + adicVal + deslocVal;
-      const saldoVal = totalVal - entradaVal;
-      const token = generateToken();
-
-      const data = {
-        token,
-        client_name: name,
-        client_cpf: document.getElementById('client_cpf').value.trim(),
-        client_phone: document.getElementById('client_phone').value.trim(),
-        client_email: document.getElementById('client_email').value.trim(),
-        client_address: document.getElementById('client_address').value.trim(),
-        client_city: document.getElementById('client_city').value.trim(),
-        event_date: eventDate,
-        event_time_start: document.getElementById('event_time_start').value || null,
-        event_time_end: document.getElementById('event_time_end').value || null,
-        event_location_name: document.getElementById('event_location_name').value.trim(),
-        event_location_address: document.getElementById('event_location_address').value.trim(),
-        event_location_city: document.getElementById('event_location_city').value.trim(),
-        package_name: pkgName,
-        package_value: pkgVal,
-        package_description: document.getElementById('package_description').value.trim(),
-        adicional_livro: document.getElementById('adicional_livro').checked,
-        adicional_ima: document.getElementById('adicional_ima').checked,
-        adicional_hora_extra: document.getElementById('adicional_hora_extra').checked,
-        adicional_outros: document.getElementById('adicional_outros').value.trim(),
-        adicional_valor: adicVal,
-        deslocamento_local: deslocLocal,
-        deslocamento_distancia: document.getElementById('deslocamento_distancia').value.trim(),
-        deslocamento_valor: deslocVal,
-        total_value: totalVal,
-        entrada_value: entradaVal,
-        saldo_value: saldoVal > 0 ? saldoVal : 0,
-        payment_method: document.getElementById('payment_method').value,
-        notes: document.getElementById('notes').value.trim(),
-        status: 'pending'
-      };
-
-      try {
-        await supaFetch('contracts', 'POST', data);
-        const link = `${SITE_URL}/view?token=${token}`;
-        document.getElementById('contract-link').value = link;
-        document.getElementById('generated-link').style.display = 'block';
-        document.getElementById('generated-link').scrollIntoView({ behavior: 'smooth' });
-        showToast('Contrato gerado com sucesso');
-      } catch (err) {
-        console.error(err);
         showToast('Erro ao criar contrato');
       }
     }
@@ -758,7 +699,6 @@ const ASSINATURA_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/obje
       }
     }
 
-    // Guarda contrato atual do modal pra baixar PDF
     let currentModalContract = null;
 
     async function showDetails(token) {
@@ -823,9 +763,6 @@ const ASSINATURA_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/obje
       currentModalContract = null;
     }
 
-    // ============================================
-    // PDF - BAIXAR CONTRATO
-    // ============================================
     async function downloadContractPDF() {
       if (!currentModalContract) return;
 
@@ -849,7 +786,7 @@ const ASSINATURA_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/obje
       }
     }
 
-        async function generatePDF(c) {
+    async function generatePDF(c) {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({
         orientation: 'portrait',
@@ -894,12 +831,7 @@ const ASSINATURA_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/obje
         doc.setFontSize(8);
         doc.setTextColor(150, 150, 150);
         doc.setFont('helvetica', 'italic');
-        doc.text(
-          `· Entre Clicks · Página ${currentPage}`,
-          pageWidth / 2,
-          pageHeight - 8,
-          { align: 'center' }
-        );
+        doc.text(`· Entre Clicks · Página ${currentPage}`, pageWidth / 2, pageHeight - 8, { align: 'center' });
       }
 
       function addTitle(text) {
@@ -917,19 +849,10 @@ const ASSINATURA_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/obje
       }
 
       function addText(text, options = {}) {
-        const {
-          fontSize = 10,
-          fontStyle = 'normal',
-          color = [50, 50, 50],
-          maxWidth = contentWidth,
-          spacing = 5,
-          align = 'left'
-        } = options;
-
+        const { fontSize = 10, fontStyle = 'normal', color = [50, 50, 50], maxWidth = contentWidth, spacing = 5, align = 'left' } = options;
         doc.setFontSize(fontSize);
         doc.setFont('helvetica', fontStyle);
         doc.setTextColor(...color);
-
         const lines = doc.splitTextToSize(text, maxWidth);
         lines.forEach(line => {
           checkPageBreak(spacing);
@@ -950,9 +873,7 @@ const ASSINATURA_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/obje
         y += 5;
       }
 
-      function addSpace(px = 5) {
-        y += px;
-      }
+      function addSpace(px = 5) { y += px; }
 
       function addKeyValue(key, value) {
         checkPageBreak(6);
@@ -960,14 +881,12 @@ const ASSINATURA_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/obje
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(80, 80, 80);
         doc.text(key + ':', margin, y);
-
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(30, 30, 30);
         const keyWidth = doc.getTextWidth(key + ': ');
         const valLines = doc.splitTextToSize(String(value || '-'), contentWidth - keyWidth);
         doc.text(valLines[0], margin + keyWidth, y);
         y += 5;
-
         for (let i = 1; i < valLines.length; i++) {
           checkPageBreak(5);
           doc.text(valLines[i], margin + keyWidth, y);
@@ -975,7 +894,7 @@ const ASSINATURA_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/obje
         }
       }
 
-            // ========== CAPA ==========
+      // ========== CAPA ==========
       const logoWidth = 90;
       const logoHeight = 28;
       doc.addImage(logoImg, 'PNG', (pageWidth - logoWidth) / 2, y + 30, logoWidth, logoHeight);
@@ -1047,7 +966,6 @@ const ASSINATURA_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/obje
       addKeyValue('Instagram', '@entreclicks.oficial');
 
       addSpace(5);
-
       addTitle('DADOS DO(A) CONTRATANTE');
       addKeyValue('Nome', c.client_name);
       addKeyValue('CPF', c.client_cpf);
@@ -1057,7 +975,6 @@ const ASSINATURA_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/obje
       addKeyValue('Cidade', c.client_city);
 
       addSpace(5);
-
       addTitle('DADOS DO EVENTO');
       addKeyValue('Data', formatDate(c.event_date));
       addKeyValue('Horário Início', c.event_time_start || '-');
@@ -1067,7 +984,6 @@ const ASSINATURA_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/obje
       addKeyValue('Cidade', c.event_location_city);
 
       addSpace(5);
-
       addTitle('PACOTE CONTRATADO');
       addKeyValue('Pacote', c.package_name);
       addKeyValue('Valor', formatMoney(c.package_value));
@@ -1085,7 +1001,6 @@ const ASSINATURA_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/obje
       }
 
       addSpace(5);
-
       addTitle('VALORES E PAGAMENTO');
       addKeyValue('Pacote', formatMoney(c.package_value));
       if (c.adicional_valor > 0) addKeyValue('Adicionais', formatMoney(c.adicional_valor));
@@ -1104,146 +1019,23 @@ const ASSINATURA_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/obje
       doc.addPage();
       y = margin;
       addHeaderSmall();
-
       addTitle('TERMOS E CONDIÇÕES');
       addSpace(3);
 
       const clausulas = [
-        {
-          num: 'CLÁUSULA 1ª — DO OBJETO',
-          texto: `1.1. A CONTRATADA prestará serviço de fotografia interativa com impressão instantânea de fotos em formato polaroid (9x6cm), com envio das imagens realizado pelos próprios convidados via QR Code, durante o evento contratado.
-
-1.2. O serviço inclui:
-a) Estação de trabalho montada no local do evento;
-b) Impressão instantânea das fotos enviadas;
-c) Mural de exposição das fotos durante o evento;
-d) Equipe técnica composta por 2 (dois) profissionais;
-e) Todo o material de impressão (papel e tinta);
-f) Itens específicos do pacote contratado.`
-        },
-        {
-          num: 'CLÁUSULA 2ª — DO PACOTE CONTRATADO',
-          texto: `Pacote: ${c.package_name} — ${formatMoney(c.package_value)}\n\n${c.package_description || ''}`
-        },
-        {
-          num: 'CLÁUSULA 3ª — DA DATA, HORÁRIO E LOCAL',
-          texto: `Data: ${formatDate(c.event_date)}
-Horário: ${c.event_time_start || '-'} às ${c.event_time_end || '-'}
-Local: ${c.event_location_name || '-'}
-Endereço: ${c.event_location_address || '-'}, ${c.event_location_city || '-'}
-
-A equipe da CONTRATADA chegará ao local com antecedência mínima de 30 (trinta) minutos para montagem da estação.
-
-Deslocamento: ${c.deslocamento_local ? 'Cachoeiro de Itapemirim — Sem taxa' : `${c.deslocamento_distancia || '-'} — ${formatMoney(c.deslocamento_valor)}`}`
-        },
-        {
-          num: 'CLÁUSULA 4ª — DO VALOR E CONDIÇÕES DE PAGAMENTO',
-          texto: `Valor total do serviço: ${formatMoney(c.total_value)}
-Entrada: ${formatMoney(c.entrada_value)} (na assinatura do contrato)
-Saldo: ${formatMoney(c.saldo_value)} (até 7 dias antes do evento)
-Forma de pagamento: ${c.payment_method || '-'}
-
-Dados para PIX:
-Chave: entreclickss@gmail.com
-Beneficiário: Victor da Costa Ribeiro
-Banco: InfinityPay
-
-O NÃO PAGAMENTO do saldo até 7 dias antes do evento poderá acarretar em CANCELAMENTO DA RESERVA, sem reembolso da entrada.`
-        },
-        {
-          num: 'CLÁUSULA 5ª — DAS OBRIGAÇÕES DA CONTRATADA',
-          texto: `5.1. Chegar ao local com antecedência mínima de 30 (trinta) minutos;
-5.2. Montar e testar todo o equipamento antes do início do serviço;
-5.3. Manter equipe uniformizada e apresentável;
-5.4. Manter equipamento reserva (backup) em caso de falha técnica;
-5.5. Realizar impressões conforme o tempo contratado;
-5.6. Deixar o mural montado até o final do evento;
-5.7. Entregar as fotos especiais e caixinha personalizada em até 15 (quinze) dias após o evento;
-5.8. Manter conduta profissional e cordial com todos os convidados.`
-        },
-        {
-          num: 'CLÁUSULA 6ª — DAS OBRIGAÇÕES DO(A) CONTRATANTE',
-          texto: `6.1. Fornecer informações necessárias com no mínimo 15 (quinze) dias de antecedência;
-
-6.2. Garantir no local do evento:
-a) Espaço mínimo de 1,5m x 1,5m para a estação;
-b) 1 (uma) tomada 110v OU 220v a até 5 metros da estação;
-c) Local COBERTO (proteção contra chuva/sol direto);
-d) Acesso ao local no horário de montagem (30 minutos antes);
-e) Conexão Wi-Fi ou sinal de celular estável para envio das fotos.
-
-6.3. Realizar o pagamento nas condições estabelecidas;
-6.4. Comunicar à CONTRATADA, com antecedência mínima de 48 horas, qualquer alteração no evento.`
-        },
-        {
-          num: 'CLÁUSULA 7ª — POLÍTICA DE CANCELAMENTO',
-          texto: `Cancelamento pelo(a) CONTRATANTE:
-a) Com MAIS DE 30 dias de antecedência: Reembolso integral da entrada, descontada taxa administrativa de 20%.
-b) Entre 15 e 30 dias de antecedência: Perda de 50% do valor pago.
-c) Entre 7 e 14 dias de antecedência: Perda de 100% do valor pago.
-d) Com MENOS de 7 dias: Perda de 100% do valor pago + cobrança do saldo restante.
-
-Cancelamento pela CONTRATADA:
-Em caso excepcional (força maior, doença grave da equipe, etc), será realizado REEMBOLSO INTEGRAL de todos os valores pagos, OU reagendamento sem custo adicional, a critério do(a) CONTRATANTE.`
-        },
-        {
-          num: 'CLÁUSULA 8ª — POLÍTICA DE ADIAMENTO',
-          texto: `8.1. O(a) CONTRATANTE pode solicitar adiamento SEM CUSTO ADICIONAL, desde que:
-a) A solicitação seja feita com mínimo de 15 dias de antecedência;
-b) A nova data tenha disponibilidade na agenda da CONTRATADA;
-c) A nova data seja dentro de 6 (seis) meses da data original.
-
-8.2. Adiamento fora dessas condições será tratado como CANCELAMENTO conforme Cláusula 7.`
-        },
-        {
-          num: 'CLÁUSULA 9ª — DIREITOS DE IMAGEM E USO DAS FOTOS',
-          texto: `9.1. O(a) CONTRATANTE ${c.consent_image_use === true ? 'AUTORIZOU' : c.consent_image_use === false ? 'NÃO AUTORIZOU' : 'deverá autorizar'} o uso de imagens do evento (setup, mural, fotos gerais SEM foco em rostos identificáveis) para fins de:
-a) Divulgação em redes sociais;
-b) Site e materiais promocionais;
-c) Portfólio profissional.
-
-9.2. As fotos impressas entregues aos convidados são de propriedade dos mesmos.
-9.3. A CONTRATADA se compromete a NUNCA divulgar imagens que exponham menores de idade sem autorização expressa dos responsáveis.`
-        },
-        {
-          num: 'CLÁUSULA 10ª — IMPREVISTOS E FORÇA MAIOR',
-          texto: `10.1. Considera-se motivo de FORÇA MAIOR:
-a) Desastres naturais (enchentes, ventanias, etc);
-b) Problemas mecânicos graves no veículo da equipe;
-c) Doença grave ou hospitalização da equipe;
-d) Restrições sanitárias/legais que impeçam o evento;
-e) Outros eventos inevitáveis e imprevisíveis.
-
-10.2. Em caso de força maior comprovada, as partes negociarão em comum acordo: reagendamento sem custo, reembolso integral ou substituição da equipe.`
-        },
-        {
-          num: 'CLÁUSULA 11ª — LIMITAÇÕES DE RESPONSABILIDADE',
-          texto: `11.1. A CONTRATADA NÃO se responsabiliza por:
-a) Fotos enviadas com má qualidade pelos convidados;
-b) Sinal de internet/telefonia deficiente no local;
-c) Interrupções de energia elétrica no local do evento;
-d) Atrasos causados por trânsito extraordinário;
-e) Danos causados por terceiros ao equipamento.
-
-11.2. A CONTRATANTE se responsabiliza por:
-a) Danos causados ao equipamento por convidados;
-b) Uso indevido da estação por convidados;
-c) Consequências de omissão de informações essenciais.`
-        },
-        {
-          num: 'CLÁUSULA 12ª — DISPOSIÇÕES GERAIS',
-          texto: `12.1. Este contrato passa a valer a partir de:
-a) Confirmação de leitura via WhatsApp;
-b) Pagamento da entrada;
-c) Envio de aceite digital ou assinatura eletrônica.
-
-12.2. Qualquer alteração deste contrato deverá ser feita por escrito e acordada entre as partes.
-12.3. Este contrato é firmado em conformidade com o Código Civil Brasileiro (Lei nº 10.406/2002) e o Código de Defesa do Consumidor (Lei nº 8.078/1990).`
-        },
-        {
-          num: 'CLÁUSULA 13ª — FORO',
-          texto: `13.1. Fica eleito o foro da Comarca de Cachoeiro de Itapemirim - ES para dirimir quaisquer controvérsias oriundas deste contrato.`
-        }
+        { num: 'CLÁUSULA 1ª — DO OBJETO', texto: `1.1. A CONTRATADA prestará serviço de fotografia interativa com impressão instantânea de fotos em formato polaroid (9x6cm), com envio das imagens realizado pelos próprios convidados via QR Code, durante o evento contratado.\n\n1.2. O serviço inclui:\na) Estação de trabalho montada no local do evento;\nb) Impressão instantânea das fotos enviadas;\nc) Mural de exposição das fotos durante o evento;\nd) Equipe técnica composta por 2 (dois) profissionais;\ne) Todo o material de impressão (papel e tinta);\nf) Itens específicos do pacote contratado.` },
+        { num: 'CLÁUSULA 2ª — DO PACOTE CONTRATADO', texto: `Pacote: ${c.package_name} — ${formatMoney(c.package_value)}\n\n${c.package_description || ''}` },
+        { num: 'CLÁUSULA 3ª — DA DATA, HORÁRIO E LOCAL', texto: `Data: ${formatDate(c.event_date)}\nHorário: ${c.event_time_start || '-'} às ${c.event_time_end || '-'}\nLocal: ${c.event_location_name || '-'}\nEndereço: ${c.event_location_address || '-'}, ${c.event_location_city || '-'}\n\nA equipe da CONTRATADA chegará ao local com antecedência mínima de 30 (trinta) minutos para montagem da estação.\n\nDeslocamento: ${c.deslocamento_local ? 'Cachoeiro de Itapemirim — Sem taxa' : `${c.deslocamento_distancia || '-'} — ${formatMoney(c.deslocamento_valor)}`}` },
+        { num: 'CLÁUSULA 4ª — DO VALOR E CONDIÇÕES DE PAGAMENTO', texto: `Valor total do serviço: ${formatMoney(c.total_value)}\nEntrada: ${formatMoney(c.entrada_value)} (na assinatura do contrato)\nSaldo: ${formatMoney(c.saldo_value)} (até 7 dias antes do evento)\nForma de pagamento: ${c.payment_method || '-'}\n\nDados para PIX:\nChave: entreclickss@gmail.com\nBeneficiário: Victor da Costa Ribeiro\nBanco: InfinityPay\n\nO NÃO PAGAMENTO do saldo até 7 dias antes do evento poderá acarretar em CANCELAMENTO DA RESERVA, sem reembolso da entrada.` },
+        { num: 'CLÁUSULA 5ª — DAS OBRIGAÇÕES DA CONTRATADA', texto: `5.1. Chegar ao local com antecedência mínima de 30 (trinta) minutos;\n5.2. Montar e testar todo o equipamento antes do início do serviço;\n5.3. Manter equipe uniformizada e apresentável;\n5.4. Manter equipamento reserva (backup) em caso de falha técnica;\n5.5. Realizar impressões conforme o tempo contratado;\n5.6. Deixar o mural montado até o final do evento;\n5.7. Entregar as fotos especiais e caixinha personalizada em até 15 (quinze) dias após o evento;\n5.8. Manter conduta profissional e cordial com todos os convidados.` },
+        { num: 'CLÁUSULA 6ª — DAS OBRIGAÇÕES DO(A) CONTRATANTE', texto: `6.1. Fornecer informações necessárias com no mínimo 15 (quinze) dias de antecedência;\n\n6.2. Garantir no local do evento:\na) Espaço mínimo de 1,5m x 1,5m para a estação;\nb) 1 (uma) tomada 110v OU 220v a até 5 metros da estação;\nc) Local COBERTO (proteção contra chuva/sol direto);\nd) Acesso ao local no horário de montagem (30 minutos antes);\ne) Conexão Wi-Fi ou sinal de celular estável para envio das fotos.\n\n6.3. Realizar o pagamento nas condições estabelecidas;\n6.4. Comunicar à CONTRATADA, com antecedência mínima de 48 horas, qualquer alteração no evento.` },
+        { num: 'CLÁUSULA 7ª — POLÍTICA DE CANCELAMENTO', texto: `Cancelamento pelo(a) CONTRATANTE:\na) Com MAIS DE 30 dias de antecedência: Reembolso integral da entrada, descontada taxa administrativa de 20%.\nb) Entre 15 e 30 dias de antecedência: Perda de 50% do valor pago.\nc) Entre 7 e 14 dias de antecedência: Perda de 100% do valor pago.\nd) Com MENOS de 7 dias: Perda de 100% do valor pago + cobrança do saldo restante.\n\nCancelamento pela CONTRATADA:\nEm caso excepcional (força maior, doença grave da equipe, etc), será realizado REEMBOLSO INTEGRAL de todos os valores pagos, OU reagendamento sem custo adicional, a critério do(a) CONTRATANTE.` },
+        { num: 'CLÁUSULA 8ª — POLÍTICA DE ADIAMENTO', texto: `8.1. O(a) CONTRATANTE pode solicitar adiamento SEM CUSTO ADICIONAL, desde que:\na) A solicitação seja feita com mínimo de 15 dias de antecedência;\nb) A nova data tenha disponibilidade na agenda da CONTRATADA;\nc) A nova data seja dentro de 6 (seis) meses da data original.\n\n8.2. Adiamento fora dessas condições será tratado como CANCELAMENTO conforme Cláusula 7.` },
+        { num: 'CLÁUSULA 9ª — DIREITOS DE IMAGEM E USO DAS FOTOS', texto: `9.1. O(a) CONTRATANTE ${c.consent_image_use === true ? 'AUTORIZOU' : c.consent_image_use === false ? 'NÃO AUTORIZOU' : 'deverá autorizar'} o uso de imagens do evento (setup, mural, fotos gerais SEM foco em rostos identificáveis) para fins de:\na) Divulgação em redes sociais;\nb) Site e materiais promocionais;\nc) Portfólio profissional.\n\n9.2. As fotos impressas entregues aos convidados são de propriedade dos mesmos.\n9.3. A CONTRATADA se compromete a NUNCA divulgar imagens que exponham menores de idade sem autorização expressa dos responsáveis.` },
+        { num: 'CLÁUSULA 10ª — IMPREVISTOS E FORÇA MAIOR', texto: `10.1. Considera-se motivo de FORÇA MAIOR:\na) Desastres naturais (enchentes, ventanias, etc);\nb) Problemas mecânicos graves no veículo da equipe;\nc) Doença grave ou hospitalização da equipe;\nd) Restrições sanitárias/legais que impeçam o evento;\ne) Outros eventos inevitáveis e imprevisíveis.\n\n10.2. Em caso de força maior comprovada, as partes negociarão em comum acordo: reagendamento sem custo, reembolso integral ou substituição da equipe.` },
+        { num: 'CLÁUSULA 11ª — LIMITAÇÕES DE RESPONSABILIDADE', texto: `11.1. A CONTRATADA NÃO se responsabiliza por:\na) Fotos enviadas com má qualidade pelos convidados;\nb) Sinal de internet/telefonia deficiente no local;\nc) Interrupções de energia elétrica no local do evento;\nd) Atrasos causados por trânsito extraordinário;\ne) Danos causados por terceiros ao equipamento.\n\n11.2. A CONTRATANTE se responsabiliza por:\na) Danos causados ao equipamento por convidados;\nb) Uso indevido da estação por convidados;\nc) Consequências de omissão de informações essenciais.` },
+        { num: 'CLÁUSULA 12ª — DISPOSIÇÕES GERAIS', texto: `12.1. Este contrato passa a valer a partir de:\na) Confirmação de leitura via WhatsApp;\nb) Pagamento da entrada;\nc) Envio de aceite digital ou assinatura eletrônica.\n\n12.2. Qualquer alteração deste contrato deverá ser feita por escrito e acordada entre as partes.\n12.3. Este contrato é firmado em conformidade com o Código Civil Brasileiro (Lei nº 10.406/2002) e o Código de Defesa do Consumidor (Lei nº 8.078/1990).` },
+        { num: 'CLÁUSULA 13ª — FORO', texto: `13.1. Fica eleito o foro da Comarca de Cachoeiro de Itapemirim - ES para dirimir quaisquer controvérsias oriundas deste contrato.` }
       ];
 
       clausulas.forEach((cl) => {
@@ -1277,7 +1069,6 @@ c) Envio de aceite digital ou assinatura eletrônica.
 
         addTitle('ACEITE DIGITAL E ASSINATURA');
         addSpace(5);
-
         addText('Declaro que li, entendi e concordo integralmente com todos os termos e condições estabelecidos neste contrato.', { fontSize: 10, fontStyle: 'italic', spacing: 6 });
         addSpace(5);
 
@@ -1302,14 +1093,12 @@ c) Envio de aceite digital ou assinatura eletrônica.
           doc.setTextColor(80, 80, 80);
           doc.text('Assinatura:', margin, y);
           y += 5;
-
           try {
             doc.setDrawColor(200, 200, 200);
             doc.setLineWidth(0.2);
             doc.rect(margin, y, 80, 40);
             doc.addImage(c.signature_data, 'PNG', margin + 2, y + 2, 76, 36);
             y += 45;
-
             doc.setDrawColor(50, 50, 50);
             doc.setLineWidth(0.3);
             doc.line(margin, y, margin + 80, y);
@@ -1323,23 +1112,21 @@ c) Envio de aceite digital ou assinatura eletrônica.
             doc.setTextColor(120, 120, 120);
             doc.text(`CPF: ${c.signed_cpf || '-'}`, margin, y);
           } catch (e) {
-            console.error('Erro ao adicionar assinatura:', e);
+            console.error('Erro:', e);
           }
         }
 
-                y += 20;
+        y += 20;
         checkPageBreak(60);
 
-        // Assinatura da contratada (imagem) - posicionada BEM próxima da linha
         if (assinaturaImg) {
           try {
             const assLargura = 70;
             const assAltura = 25;
-            // Posiciona a assinatura de forma que a base fique próxima da linha
             doc.addImage(assinaturaImg, 'PNG', pageWidth - margin - assLargura, y - 8, assLargura, assAltura);
             y += assAltura - 12;
           } catch(e) {
-            console.error('Erro ao adicionar assinatura:', e);
+            console.error('Erro:', e);
           }
         }
 
@@ -1376,11 +1163,7 @@ c) Envio de aceite digital ou assinatura eletrônica.
           canvas.height = img.height;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0);
-          try {
-            resolve(canvas.toDataURL('image/png'));
-          } catch(e) {
-            reject(e);
-          }
+          try { resolve(canvas.toDataURL('image/png')); } catch(e) { reject(e); }
         };
         img.onerror = reject;
         img.src = url;
