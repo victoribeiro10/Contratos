@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contrato - Entre Clicks</title>
+  <title>Contrato — Entre Clicks</title>
   <link rel="stylesheet" href="contract.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
 </head>
 <body>
 
-  <!-- LOADING -->
   <div id="loading-screen">
     <div class="loading" style="padding-top:100px;">
       <div class="spinner"></div>
@@ -17,20 +16,17 @@
     </div>
   </div>
 
-  <!-- CONTRATO -->
   <div id="contract-screen" style="display:none;">
 
-    <div class="contract-header">
-      <div class="company-logo">EC</div>
-      <div class="company-name">Entre Clicks</div>
-      <div class="contract-title">Contrato de Prestação de Serviços</div>
+    <div class="marca">
+      <div class="marca-logo">Entre Clicks</div>
+      <div class="marca-subtitulo">contrato de prestação de serviços</div>
     </div>
 
     <div class="container">
 
-      <!-- DADOS CONTRATADA -->
       <div class="card">
-        <div class="card-title"><div class="icon">⚡</div> Contratada</div>
+        <div class="card-title"><div class="icon">✦</div> Contratada</div>
         <div class="info-grid">
           <div class="info-item full">
             <div class="info-label">Empresa</div>
@@ -47,7 +43,6 @@
         </div>
       </div>
 
-      <!-- DADOS CONTRATANTE -->
       <div class="card">
         <div class="card-title"><div class="icon">👤</div> Contratante</div>
         <div class="info-grid">
@@ -66,7 +61,6 @@
         </div>
       </div>
 
-      <!-- EVENTO -->
       <div class="card">
         <div class="card-title"><div class="icon">🎉</div> Evento</div>
         <div class="info-grid">
@@ -85,55 +79,48 @@
         </div>
       </div>
 
-      <!-- PACOTE -->
       <div class="card">
         <div class="card-title"><div class="icon">⭐</div> Pacote Contratado</div>
-        <div style="padding:14px; background:var(--bg-input); border-radius:var(--radius-sm); border:1px solid var(--gold-border); margin-bottom:12px;">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:16px; font-weight:700; color:var(--gold);" id="v-pkg-name"></span>
-            <span style="font-size:18px; font-weight:800; color:var(--gold);" id="v-pkg-value"></span>
-          </div>
+        <div style="padding:18px; background:var(--preto); border-radius:var(--radius-sm); border:1px solid var(--gold-border); margin-bottom:14px; text-align: center;">
+          <div style="font-family: 'Playfair Display', serif; font-size:18px; font-weight:500; color:var(--dourado); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 8px;" id="v-pkg-name"></div>
+          <div style="font-family: 'Playfair Display', serif; font-size:26px; font-weight:500; color:var(--dourado); letter-spacing: 1px;" id="v-pkg-value"></div>
         </div>
-        <div style="font-size:13px; color:var(--text-secondary); line-height:2; white-space:pre-line;" id="v-pkg-desc"></div>
+        <div style="font-size:13px; color:var(--branco); line-height:2.2; white-space:pre-line; font-weight: 300;" id="v-pkg-desc"></div>
       </div>
 
-      <!-- ADICIONAIS -->
       <div class="card" id="v-adicionais-card" style="display:none;">
         <div class="card-title"><div class="icon">➕</div> Adicionais</div>
         <div id="v-adicionais"></div>
       </div>
 
-      <!-- VALORES -->
       <div class="card">
         <div class="card-title"><div class="icon">💰</div> Valores e Pagamento</div>
         <div id="v-valores"></div>
       </div>
 
-      <!-- CLÁUSULAS -->
       <div class="card">
         <div class="card-title"><div class="icon">📜</div> Termos e Condições</div>
         <div class="contract-text" id="v-clausulas"></div>
       </div>
 
-      <!-- ACEITES -->
       <div class="card">
         <div class="card-title"><div class="icon">✋</div> Autorizações</div>
 
-        <div style="margin-bottom:20px;">
-          <p style="font-size:13px; font-weight:600; margin-bottom:6px; color:var(--text-primary);">
-            📸 Autorização de uso de imagem
+        <div style="margin-bottom:22px;">
+          <p style="font-family: 'Playfair Display', serif; font-size:14px; font-weight:500; margin-bottom:6px; color:var(--branco); letter-spacing: 1px;">
+            Autorização de uso de imagem
           </p>
-          <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">
+          <p style="font-size:12px; color:var(--cinza-suave); margin-bottom:12px; line-height: 1.7;">
             Autorizo a CONTRATADA a utilizar imagens do evento (setup, mural, fotos gerais SEM foco em rostos identificáveis) para divulgação em redes sociais, site, materiais promocionais e portfólio profissional.
           </p>
           <div class="radio-group">
             <div class="radio-option" onclick="selectRadio(this, 'consent_image', true)">
               <input type="radio" name="consent_image" value="true">
-              <label>✅ Autorizo</label>
+              <label>✓ Autorizo</label>
             </div>
             <div class="radio-option" onclick="selectRadio(this, 'consent_image', false)">
               <input type="radio" name="consent_image" value="false">
-              <label>❌ Não autorizo</label>
+              <label>✗ Não autorizo</label>
             </div>
           </div>
         </div>
@@ -142,16 +129,15 @@
           <div class="consent-item" onclick="toggleConsent(this)">
             <input type="checkbox" id="consent_whatsapp">
             <div class="consent-label">
-              📱 Aceito receber comunicações por WhatsApp
+              Aceito receber comunicações por WhatsApp
               <small>Atualizações sobre o serviço e novidades da Entre Clicks</small>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ACEITE OBRIGATÓRIO -->
       <div class="card">
-        <div class="card-title"><div class="icon">📝</div> Aceite do Contrato <span class="consent-required">*</span></div>
+        <div class="card-title"><div class="icon">✓</div> Aceite do Contrato <span class="consent-required">*</span></div>
         <div class="consent-group">
           <div class="consent-item" onclick="toggleConsent(this)" id="main-consent">
             <input type="checkbox" id="consent_main">
@@ -163,9 +149,8 @@
         </div>
       </div>
 
-      <!-- ASSINATURA -->
       <div class="card">
-        <div class="card-title"><div class="icon">✍️</div> Assinatura Digital</div>
+        <div class="card-title"><div class="icon">✍</div> Assinatura Digital</div>
         <div class="form-row" style="margin-bottom:16px;">
           <div class="form-group">
             <label>Nome Completo *</label>
@@ -176,91 +161,82 @@
             <input type="text" id="sign_cpf" placeholder="000.000.000-00">
           </div>
         </div>
-        <p style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">
+        <p style="font-size:11px; color:var(--cinza-suave); margin-bottom:10px; letter-spacing: 0.5px;">
           Desenhe sua assinatura abaixo:
         </p>
         <div class="signature-area">
           <div class="signature-pad-container" id="sig-container">
             <canvas id="signature-pad"></canvas>
-            <div class="signature-placeholder" id="sig-placeholder">✍️ Assine aqui</div>
+            <div class="signature-placeholder" id="sig-placeholder">Assine aqui</div>
           </div>
           <div class="signature-actions">
-            <button class="btn-clear" onclick="clearSignature()">🗑️ Limpar</button>
+            <button class="btn-clear" onclick="clearSignature()">Limpar</button>
           </div>
         </div>
       </div>
 
-      <!-- BOTÃO -->
       <button class="btn-primary btn-success" id="btn-sign" onclick="signContract()">
-        ✅ Aceitar e Assinar Contrato
+        Aceitar e Assinar Contrato
       </button>
 
-      <p style="text-align:center; font-size:11px; color:var(--text-muted); margin-top:12px; padding-bottom:10px;">
+      <p style="text-align:center; font-size:10px; color:var(--cinza-suave); margin-top:14px; padding-bottom:20px; letter-spacing: 1px;">
         Ao assinar, serão registrados data, hora, IP e dispositivo.
       </p>
-      <div class="contract-footer">Powered by <span>Entre Clicks</span> ⚡</div>
+      <div class="contract-footer">· Entre Clicks ·</div>
     </div>
   </div>
 
-  <!-- SUCESSO -->
   <div id="success-screen" class="success-screen">
-    <div class="contract-header">
-      <div class="company-logo">EC</div>
-      <div class="company-name">Entre Clicks</div>
-      <div class="contract-title">Contrato de Prestação de Serviços</div>
+    <div class="marca">
+      <div class="marca-logo">Entre Clicks</div>
+      <div class="marca-subtitulo">sua memória revelada</div>
     </div>
     <div class="container">
-      <div class="success-icon">✅</div>
-      <div class="success-title">Contrato Assinado!</div>
+      <div class="success-icon">✓</div>
+      <div class="success-title">Contrato <em>Assinado</em></div>
       <div class="success-message">
         <p>Seu contrato foi assinado com sucesso.</p>
-        <p style="margin-top:8px;">Obrigado pela confiança! ⚡📸</p>
-        <p style="margin-top:16px; font-size:12px; color:var(--text-muted);">
+        <p style="margin-top:8px;">Obrigado pela confiança!</p>
+        <p style="margin-top:20px; font-size:11px; color:var(--cinza-suave); letter-spacing: 1px;">
           Assinado em: <span id="signed-date"></span>
         </p>
       </div>
-      <div class="contract-footer" style="margin-top:40px;">Powered by <span>Entre Clicks</span> ⚡</div>
+      <div class="contract-footer" style="margin-top:40px;">· Entre Clicks ·</div>
     </div>
   </div>
 
-  <!-- JÁ ASSINADO -->
   <div id="already-signed-screen" style="display:none;">
-    <div class="contract-header">
-      <div class="company-logo">EC</div>
-      <div class="company-name">Entre Clicks</div>
-      <div class="contract-title">Contrato de Prestação de Serviços</div>
+    <div class="marca">
+      <div class="marca-logo">Entre Clicks</div>
+      <div class="marca-subtitulo">contrato de prestação de serviços</div>
     </div>
     <div class="container">
       <div class="card already-signed">
-        <div class="icon">✅</div>
-        <h2 style="color:var(--success); margin-bottom:8px;">Contrato já assinado</h2>
-        <p style="color:var(--text-muted); font-size:14px;">Este contrato já foi aceito anteriormente.</p>
-        <p style="color:var(--text-muted); margin-top:8px; font-size:12px;" id="already-signed-info"></p>
+        <div class="icon">✓</div>
+        <h2 style="font-family: 'Playfair Display', serif; color:var(--sucesso); margin-bottom:8px; letter-spacing: 1px;">Contrato já assinado</h2>
+        <p style="color:var(--cinza-suave); font-size:13px;">Este contrato já foi aceito anteriormente.</p>
+        <p style="color:var(--cinza-suave); margin-top:10px; font-size:11px; letter-spacing: 1px;" id="already-signed-info"></p>
       </div>
     </div>
   </div>
 
-  <!-- ERRO -->
   <div id="error-screen" style="display:none;">
-    <div class="contract-header">
-      <div class="company-logo">EC</div>
-      <div class="company-name">Entre Clicks</div>
-      <div class="contract-title">Contrato de Prestação de Serviços</div>
+    <div class="marca">
+      <div class="marca-logo">Entre Clicks</div>
+      <div class="marca-subtitulo">contrato de prestação de serviços</div>
     </div>
     <div class="container" style="text-align:center; padding-top:40px;">
-      <p style="font-size:48px; margin-bottom:16px;">😕</p>
-      <h2>Contrato não encontrado</h2>
-      <p style="color:var(--text-muted); margin-top:8px;">O link pode estar incorreto ou expirado.</p>
+      <p style="font-size:48px; margin-bottom:16px;">✗</p>
+      <h2 style="font-family: 'Playfair Display', serif; letter-spacing: 1px;">Contrato não encontrado</h2>
+      <p style="color:var(--cinza-suave); margin-top:10px; font-size:13px;">O link pode estar incorreto ou expirado.</p>
     </div>
   </div>
 
   <div class="toast" id="toast"></div>
 
   <script>
-    // ===== CONFIG =====
     const SUPABASE_URL = 'https://scwznirvzwrphztvopbz.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjd3puaXJ2endycGh6dHZvcGJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNzI2NzQsImV4cCI6MjA5NTY0ODY3NH0.PLvr547bIEJwjECKxQaoR7lpazs8GbSpLYLMDiGD4Po';
-    const SITE_URL = 'https://contratos-brown.vercel.app/';
 
     let contractData = null;
     let signaturePad = null;
@@ -268,14 +244,12 @@
     let hasSignature = false;
     let consents = { consent_image: null };
 
-    // ===== INIT =====
     document.addEventListener('DOMContentLoaded', () => {
       const token = new URLSearchParams(window.location.search).get('token');
       if (!token) { showScreen('error'); return; }
       loadContract(token);
     });
 
-    // ===== LOAD =====
     async function loadContract(token) {
       try {
         const res = await fetch(`${SUPABASE_URL}/rest/v1/contracts?token=eq.${token}`, {
@@ -313,89 +287,79 @@
       }
     }
 
-    // ===== PREENCHER =====
     function fillContract() {
       const c = contractData;
-
       document.getElementById('v-name').textContent = c.client_name;
       document.getElementById('v-cpf').textContent = c.client_cpf || '-';
       document.getElementById('v-phone').textContent = c.client_phone || '-';
-
       document.getElementById('v-event-date').textContent = formatDate(c.event_date);
       document.getElementById('v-event-time').textContent =
         (c.event_time_start && c.event_time_end) ? `${c.event_time_start} às ${c.event_time_end}` : '-';
       document.getElementById('v-event-location').textContent =
         `${c.event_location_name || ''} — ${c.event_location_address || ''}, ${c.event_location_city || ''}`;
-
       document.getElementById('v-pkg-name').textContent = c.package_name;
       document.getElementById('v-pkg-value').textContent = formatMoney(c.package_value);
       document.getElementById('v-pkg-desc').textContent = c.package_description || '';
 
-      // Adicionais
       let adicionaisHtml = '';
-      if (c.adicional_livro) adicionaisHtml += '<p style="font-size:13px; color:var(--text-secondary); padding:6px 0;">📖 Livro de Recordações — R$ 100,00</p>';
-      if (c.adicional_ima) adicionaisHtml += '<p style="font-size:13px; color:var(--text-secondary); padding:6px 0;">🧲 Imã Memória — R$ 50,00</p>';
-      if (c.adicional_hora_extra) adicionaisHtml += '<p style="font-size:13px; color:var(--text-secondary); padding:6px 0;">⏰ Hora Extra — R$ 180,00/h</p>';
-      if (c.adicional_outros) adicionaisHtml += `<p style="font-size:13px; color:var(--text-secondary); padding:6px 0;">📌 ${c.adicional_outros}</p>`;
+      if (c.adicional_livro) adicionaisHtml += '<p style="font-size:13px; color:var(--branco); padding:8px 0; border-bottom: 1px solid var(--cinza);">Livro de Recordações — R$ 100,00</p>';
+      if (c.adicional_ima) adicionaisHtml += '<p style="font-size:13px; color:var(--branco); padding:8px 0; border-bottom: 1px solid var(--cinza);">Imã Memória — R$ 50,00</p>';
+      if (c.adicional_hora_extra) adicionaisHtml += '<p style="font-size:13px; color:var(--branco); padding:8px 0; border-bottom: 1px solid var(--cinza);">Hora Extra — R$ 180,00/h</p>';
+      if (c.adicional_outros) adicionaisHtml += `<p style="font-size:13px; color:var(--branco); padding:8px 0;">${c.adicional_outros}</p>`;
 
       if (adicionaisHtml) {
         document.getElementById('v-adicionais-card').style.display = 'block';
         document.getElementById('v-adicionais').innerHTML = adicionaisHtml;
       }
 
-      // Valores
       let valHtml = `
-        <div style="padding:14px; background:var(--bg-input); border-radius:var(--radius-sm); border:1px solid var(--border);">
-          <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-            <span style="font-size:13px; color:var(--text-secondary);">Pacote ${c.package_name}:</span>
-            <span style="font-size:13px; color:var(--text-primary);">${formatMoney(c.package_value)}</span>
+        <div style="padding:18px; background:var(--preto); border-radius:var(--radius-sm); border:1px solid var(--cinza);">
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <span style="font-size:12px; color:var(--cinza-suave); letter-spacing: 0.5px;">Pacote ${c.package_name}:</span>
+            <span style="font-size:13px; color:var(--branco); font-weight: 500;">${formatMoney(c.package_value)}</span>
           </div>`;
 
       if (c.adicional_valor > 0) {
-        valHtml += `
-          <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-            <span style="font-size:13px; color:var(--text-secondary);">Adicionais:</span>
-            <span style="font-size:13px; color:var(--text-primary);">${formatMoney(c.adicional_valor)}</span>
+        valHtml += `<div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <span style="font-size:12px; color:var(--cinza-suave); letter-spacing: 0.5px;">Adicionais:</span>
+            <span style="font-size:13px; color:var(--branco); font-weight: 500;">${formatMoney(c.adicional_valor)}</span>
           </div>`;
       }
 
       if (c.deslocamento_valor > 0) {
-        valHtml += `
-          <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-            <span style="font-size:13px; color:var(--text-secondary);">Deslocamento${c.deslocamento_distancia ? ` (${c.deslocamento_distancia})` : ''}:</span>
-            <span style="font-size:13px; color:var(--text-primary);">${formatMoney(c.deslocamento_valor)}</span>
+        valHtml += `<div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <span style="font-size:12px; color:var(--cinza-suave); letter-spacing: 0.5px;">Deslocamento${c.deslocamento_distancia ? ` (${c.deslocamento_distancia})` : ''}:</span>
+            <span style="font-size:13px; color:var(--branco); font-weight: 500;">${formatMoney(c.deslocamento_valor)}</span>
           </div>`;
       }
 
       valHtml += `
           <div class="divider"></div>
-          <div style="display:flex; justify-content:space-between; margin-top:8px;">
-            <span style="font-size:16px; font-weight:700; color:var(--gold);">TOTAL:</span>
-            <span style="font-size:16px; font-weight:700; color:var(--gold);">${formatMoney(c.total_value)}</span>
+          <div style="display:flex; justify-content:space-between; margin-top:10px;">
+            <span style="font-family: 'Playfair Display', serif; font-size:14px; font-weight:500; color:var(--dourado); letter-spacing: 2px; text-transform: uppercase;">Total</span>
+            <span style="font-family: 'Playfair Display', serif; font-size:22px; font-weight:500; color:var(--dourado); letter-spacing: 1px;">${formatMoney(c.total_value)}</span>
           </div>
-          <div style="display:flex; justify-content:space-between; margin-top:6px;">
-            <span style="font-size:12px; color:var(--text-muted);">Entrada (na assinatura):</span>
-            <span style="font-size:12px; color:var(--text-secondary);">${formatMoney(c.entrada_value)}</span>
+          <div style="display:flex; justify-content:space-between; margin-top:10px; padding-top: 10px; border-top: 1px dashed var(--cinza);">
+            <span style="font-size:11px; color:var(--cinza-suave); letter-spacing: 0.5px;">Entrada (na assinatura):</span>
+            <span style="font-size:12px; color:var(--branco);">${formatMoney(c.entrada_value)}</span>
           </div>
-          <div style="display:flex; justify-content:space-between;">
-            <span style="font-size:12px; color:var(--text-muted);">Saldo (até 7 dias antes):</span>
-            <span style="font-size:12px; color:var(--text-secondary);">${formatMoney(c.saldo_value)}</span>
+          <div style="display:flex; justify-content:space-between; margin-top:4px;">
+            <span style="font-size:11px; color:var(--cinza-suave); letter-spacing: 0.5px;">Saldo (até 7 dias antes):</span>
+            <span style="font-size:12px; color:var(--branco);">${formatMoney(c.saldo_value)}</span>
           </div>
-          <div style="margin-top:8px;">
-            <span style="font-size:12px; color:var(--text-muted);">Forma: <strong style="color:var(--text-primary);">${c.payment_method || '-'}</strong></span>
+          <div style="margin-top:12px; padding-top: 12px; border-top: 1px solid var(--cinza);">
+            <span style="font-size:11px; color:var(--cinza-suave); letter-spacing: 1px;">FORMA:</span>
+            <span style="font-size:13px; color:var(--dourado-claro); font-weight: 500; margin-left: 8px;">${c.payment_method || '-'}</span>
           </div>
         </div>`;
       document.getElementById('v-valores').innerHTML = valHtml;
 
-      // Preencher assinatura
       if (c.client_name) document.getElementById('sign_name').value = c.client_name;
       if (c.client_cpf) document.getElementById('sign_cpf').value = c.client_cpf;
 
-      // CLÁUSULAS COMPLETAS
       document.getElementById('v-clausulas').innerHTML = generateClauses(c);
     }
 
-    // ===== CLÁUSULAS =====
     function generateClauses(c) {
       return `
         <div class="clause">
@@ -527,7 +491,6 @@
       `;
     }
 
-    // ===== SIGNATURE PAD =====
     function initSignaturePad() {
       const canvas = document.getElementById('signature-pad');
       const container = document.getElementById('sig-container');
@@ -537,7 +500,7 @@
         const r = container.getBoundingClientRect();
         canvas.width = r.width - 8;
         canvas.height = 180;
-        ctx.strokeStyle = '#C9A94E';
+        ctx.strokeStyle = '#1c1c1c';
         ctx.lineWidth = 2.5;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
@@ -571,7 +534,6 @@
       document.getElementById('sig-placeholder').style.display = 'block';
     }
 
-    // ===== HELPERS =====
     function selectRadio(el, name, value) {
       consents[name] = value;
       el.parentElement.querySelectorAll('.radio-option').forEach(o => o.classList.remove('selected', 'selected-no'));
@@ -584,21 +546,20 @@
       el.classList.toggle('checked', cb.checked);
     }
 
-    // ===== ASSINAR =====
     async function signContract() {
       const mainOk = document.getElementById('consent_main').checked;
       const name = document.getElementById('sign_name').value.trim();
       const cpf = document.getElementById('sign_cpf').value.trim();
 
-      if (!mainOk) { showToast('⚠️ Aceite os termos do contrato'); return; }
-      if (!name) { showToast('⚠️ Preencha seu nome'); return; }
-      if (!cpf) { showToast('⚠️ Preencha seu CPF'); return; }
-      if (consents.consent_image === null) { showToast('⚠️ Selecione se autoriza uso de imagem'); return; }
-      if (!hasSignature) { showToast('⚠️ Faça sua assinatura'); return; }
+      if (!mainOk) { showToast('Aceite os termos do contrato'); return; }
+      if (!name) { showToast('Preencha seu nome'); return; }
+      if (!cpf) { showToast('Preencha seu CPF'); return; }
+      if (consents.consent_image === null) { showToast('Selecione se autoriza uso de imagem'); return; }
+      if (!hasSignature) { showToast('Faça sua assinatura'); return; }
 
       const btn = document.getElementById('btn-sign');
       btn.disabled = true;
-      btn.innerHTML = '⏳ Processando...';
+      btn.innerHTML = 'Processando...';
 
       try {
         let ip = '-';
@@ -630,9 +591,9 @@
         showScreen('success');
       } catch (err) {
         console.error(err);
-        showToast('❌ Erro ao assinar');
+        showToast('Erro ao assinar');
         btn.disabled = false;
-        btn.innerHTML = '✅ Aceitar e Assinar Contrato';
+        btn.innerHTML = 'Aceitar e Assinar Contrato';
       }
     }
 
@@ -644,7 +605,7 @@
       document.getElementById('error-screen').style.display = s === 'error' ? 'block' : 'none';
     }
 
-    function formatMoney(v) { return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v); }
+    function formatMoney(v) { return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v || 0); }
     function formatDate(d) { if (!d) return '-'; return new Date(d + 'T00:00:00').toLocaleDateString('pt-BR'); }
     function showToast(msg) {
       const t = document.getElementById('toast');
