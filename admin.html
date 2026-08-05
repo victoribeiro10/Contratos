@@ -719,7 +719,7 @@ const ASSINATURA_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/obje
       }
     }
 
-    async function generatePDF(c) {
+        async function generatePDF(c) {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({
         orientation: 'portrait',
@@ -727,7 +727,11 @@ const ASSINATURA_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/obje
         format: 'a4'
       });
 
-      const logoImg = await loadImageAsBase64(LOGO_VERTICAL_URL);
+      const logoImg = await loadImageAsBase64(LOGO_HORIZONTAL_URL);
+      let assinaturaImg = null;
+      try {
+        assinaturaImg = await loadImageAsBase64(ASSINATURA_URL);
+      } catch(e) { console.error('Erro ao carregar assinatura:', e); }
 
       const pageWidth = 210;
       const pageHeight = 297;
