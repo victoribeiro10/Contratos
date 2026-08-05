@@ -14,6 +14,46 @@
       0% { left: -100%; }
       100% { left: 100%; }
     }
+    .edit-mode-banner {
+      background: linear-gradient(135deg, rgba(212, 175, 122, 0.15), rgba(212, 175, 122, 0.05));
+      border: 1px solid var(--dourado);
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .edit-mode-banner .info {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      color: var(--dourado);
+      font-size: 13px;
+      letter-spacing: 1px;
+    }
+    .edit-mode-banner .info strong {
+      font-style: normal;
+      font-weight: 600;
+      color: var(--dourado-claro);
+    }
+    .btn-cancel-edit {
+      background: transparent;
+      border: 1px solid var(--cinza-suave);
+      color: var(--cinza-suave);
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      transition: all 0.3s;
+    }
+    .btn-cancel-edit:hover {
+      border-color: var(--erro);
+      color: var(--erro);
+    }
   </style>
 </head>
 <body>
@@ -51,8 +91,16 @@
 
     <div class="container">
 
-      <!-- ===== ABA CRIAR ===== -->
+      <!-- ===== ABA CRIAR / EDITAR ===== -->
       <div id="tab-create">
+
+        <!-- Banner de modo edição -->
+        <div id="edit-banner" class="edit-mode-banner" style="display:none;">
+          <div class="info">
+            ✏️ Editando contrato de <strong id="edit-client-name"></strong>
+          </div>
+          <button class="btn-cancel-edit" onclick="cancelEdit()">Cancelar</button>
+        </div>
 
         <!-- CLIENTE -->
         <div class="card">
@@ -264,7 +312,7 @@
           </div>
         </div>
 
-        <button class="btn-primary" id="btn-gerar" onclick="createContract()">
+        <button class="btn-primary" id="btn-gerar" onclick="saveContract()">
           Gerar Contrato
         </button>
 
@@ -280,7 +328,7 @@
 
         <div id="generated-link" style="display:none; margin-top: 16px;">
           <div class="card" style="border-color: var(--dourado);">
-            <div class="card-title"><div class="icon">✓</div> Contrato Criado</div>
+            <div class="card-title"><div class="icon">✓</div> <span id="generated-title">Contrato Criado</span></div>
             <p style="font-size: 12px; color: var(--cinza-suave); margin-bottom: 12px; letter-spacing: 0.5px;">
               Envie este link para o cliente assinar:
             </p>
@@ -325,6 +373,9 @@
     const SITE_URL = 'https://contratos-brown.vercel.app';
     const LOGO_HORIZONTAL_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/object/public/logos/logo-horizontal.png';
     const ASSINATURA_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/object/public/logos/assinatura-victor.png';
+
+    // ===== ESTADO DE EDIÇÃO =====
+    let editingContract = null; // null = criando novo, objeto = editando
 
     // ===== LOGIN =====
     function checkLogin() {
@@ -455,13 +506,18 @@
       const preview = document.getElementById('package-preview');
       if (sel && PACKAGES[sel]) {
         const pkg = PACKAGES[sel];
-        document.getElementById('package_value').value = pkg.value;
+        // Só substitui valor e descrição se NÃO estiver editando
+        if (!editingContract) {
+          document.getElementById('package_value').value = pkg.value;
+          document.getElementById('package_description').value = pkg.description;
+        }
         document.getElementById('preview-pkg-name').textContent = sel;
-        document.getElementById('package_description').value = pkg.description;
         preview.style.display = 'block';
       } else {
-        document.getElementById('package_value').value = 0;
-        document.getElementById('package_description').value = '';
+        if (!editingContract) {
+          document.getElementById('package_value').value = 0;
+          document.getElementById('package_description').value = '';
+        }
         preview.style.display = 'none';
       }
       updateResumo();
@@ -509,9 +565,132 @@
         t.classList.toggle('active', (i === 0 && tab === 'create') || (i === 1 && tab === 'list'));
       });
       if (tab === 'list') loadContracts();
+      if (tab === 'create' && !editingContract) {
+        // Se voltar pra aba Novo sem estar editando, limpa
+        // (só limpa se veio de edição cancelada, mas mantém dados novos)
+      }
     }
 
-    async function createContract() {
+    // ===== LIMPAR FORMULÁRIO =====
+    function clearForm() {
+      document.getElementById('client_name').value = '';
+      document.getElementById('client_cpf').value = '';
+      document.getElementById('client_phone').value = '';
+      document.getElementById('client_email').value = '';
+      document.getElementById('client_address').value = '';
+      document.getElementById('client_city').value = '';
+      document.getElementById('event_date').value = '';
+      document.getElementById('event_time_start').value = '';
+      document.getElementById('event_time_end').value = '';
+      document.getElementById('event_location_name').value = '';
+      document.getElementById('event_location_address').value = '';
+      document.getElementById('event_location_city').value = '';
+      document.getElementById('package_name').value = '';
+      document.getElementById('package_value').value = 0;
+      document.getElementById('package_description').value = '';
+      document.getElementById('adicional_livro').checked = false;
+      document.getElementById('adicional_ima').checked = false;
+      document.getElementById('adicional_hora_extra').checked = false;
+      document.getElementById('adicional_outros').value = '';
+      document.getElementById('adicional_valor').value = 0;
+      document.getElementById('deslocamento_distancia').value = '';
+      document.getElementById('deslocamento_valor').value = 0;
+      document.getElementById('entrada_value').value = 50;
+      document.getElementById('payment_method').value = 'PIX';
+      document.getElementById('notes').value = '';
+      document.getElementById('package-preview').style.display = 'none';
+      document.getElementById('generated-link').style.display = 'none';
+
+      // Reset checkboxes visuais
+      document.querySelectorAll('.consent-item').forEach(el => el.classList.remove('checked'));
+
+      // Reset deslocamento
+      selectDeslocamento(true);
+
+      updateResumo();
+    }
+
+    // ===== ENTRAR EM MODO EDIÇÃO =====
+    function enterEditMode(contract) {
+      editingContract = contract;
+
+      // Preenche o formulário com os dados do contrato
+      document.getElementById('client_name').value = contract.client_name || '';
+      document.getElementById('client_cpf').value = contract.client_cpf || '';
+      document.getElementById('client_phone').value = contract.client_phone || '';
+      document.getElementById('client_email').value = contract.client_email || '';
+      document.getElementById('client_address').value = contract.client_address || '';
+      document.getElementById('client_city').value = contract.client_city || '';
+      document.getElementById('event_date').value = contract.event_date || '';
+      document.getElementById('event_time_start').value = contract.event_time_start || '';
+      document.getElementById('event_time_end').value = contract.event_time_end || '';
+      document.getElementById('event_location_name').value = contract.event_location_name || '';
+      document.getElementById('event_location_address').value = contract.event_location_address || '';
+      document.getElementById('event_location_city').value = contract.event_location_city || '';
+      document.getElementById('package_name').value = contract.package_name || '';
+      document.getElementById('package_value').value = contract.package_value || 0;
+      document.getElementById('package_description').value = contract.package_description || '';
+
+      // Mostra preview do pacote
+      if (contract.package_name) {
+        document.getElementById('preview-pkg-name').textContent = contract.package_name;
+        document.getElementById('package-preview').style.display = 'block';
+      }
+
+      // Adicionais
+      const adicLivro = document.getElementById('adicional_livro');
+      const adicIma = document.getElementById('adicional_ima');
+      const adicHora = document.getElementById('adicional_hora_extra');
+
+      adicLivro.checked = contract.adicional_livro || false;
+      adicIma.checked = contract.adicional_ima || false;
+      adicHora.checked = contract.adicional_hora_extra || false;
+
+      adicLivro.closest('.consent-item').classList.toggle('checked', contract.adicional_livro);
+      adicIma.closest('.consent-item').classList.toggle('checked', contract.adicional_ima);
+      adicHora.closest('.consent-item').classList.toggle('checked', contract.adicional_hora_extra);
+
+      document.getElementById('adicional_outros').value = contract.adicional_outros || '';
+      document.getElementById('adicional_valor').value = contract.adicional_valor || 0;
+
+      // Deslocamento
+      selectDeslocamento(contract.deslocamento_local);
+      document.getElementById('deslocamento_distancia').value = contract.deslocamento_distancia || '';
+      document.getElementById('deslocamento_valor').value = contract.deslocamento_valor || 0;
+
+      // Pagamento
+      document.getElementById('entrada_value').value = contract.entrada_value || 0;
+      document.getElementById('payment_method').value = contract.payment_method || 'PIX';
+      document.getElementById('notes').value = contract.notes || '';
+
+      // Atualiza UI
+      document.getElementById('edit-banner').style.display = 'flex';
+      document.getElementById('edit-client-name').textContent = contract.client_name;
+      document.getElementById('btn-gerar').textContent = 'Salvar Alterações';
+      document.getElementById('generated-link').style.display = 'none';
+
+      updateResumo();
+      showTab('create');
+
+      // Rola pro topo
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      showToast('Modo edição ativado');
+    }
+
+    // ===== CANCELAR EDIÇÃO =====
+    function cancelEdit() {
+      if (!confirm('Cancelar edição? As alterações não serão salvas.')) return;
+
+      editingContract = null;
+      document.getElementById('edit-banner').style.display = 'none';
+      document.getElementById('btn-gerar').textContent = 'Gerar Contrato';
+      clearForm();
+      showTab('list');
+      showToast('Edição cancelada');
+    }
+
+    // ===== SALVAR CONTRATO (CRIAR OU ATUALIZAR) =====
+    async function saveContract() {
       const name = document.getElementById('client_name').value.trim();
       const pkgName = document.getElementById('package_name').value;
       if (!pkgName) { showToast('Selecione um pacote'); return; }
@@ -527,10 +706,11 @@
       const entradaVal = parseFloat(document.getElementById('entrada_value').value) || 0;
       const totalVal = pkgVal + adicVal + deslocVal;
       const saldoVal = totalVal - entradaVal;
-      const token = generateToken();
+
+      const isEditing = editingContract !== null;
+      const token = isEditing ? editingContract.token : generateToken();
 
       const data = {
-        token,
         client_name: name,
         client_cpf: document.getElementById('client_cpf').value.trim(),
         client_phone: document.getElementById('client_phone').value.trim(),
@@ -558,9 +738,14 @@
         entrada_value: entradaVal,
         saldo_value: saldoVal > 0 ? saldoVal : 0,
         payment_method: document.getElementById('payment_method').value,
-        notes: document.getElementById('notes').value.trim(),
-        status: 'pending'
+        notes: document.getElementById('notes').value.trim()
       };
+
+      // Se está criando novo, adiciona token e status
+      if (!isEditing) {
+        data.token = token;
+        data.status = 'pending';
+      }
 
       // BARRA DE LOADING
       const btn = document.getElementById('btn-gerar');
@@ -571,7 +756,12 @@
       btn.disabled = true;
       loadingBar.style.display = 'block';
 
-      const messages = [
+      const messages = isEditing ? [
+        { pct: 0, texto: 'Preparando alterações...' },
+        { pct: 30, texto: 'Atualizando informações...' },
+        { pct: 60, texto: 'Salvando no servidor...' },
+        { pct: 90, texto: 'Finalizando...' }
+      ] : [
         { pct: 0, texto: 'Preparando contrato...' },
         { pct: 30, texto: 'Salvando informações...' },
         { pct: 60, texto: 'Gerando link seguro...' },
@@ -605,14 +795,21 @@
       }, 120);
 
       try {
-        await supaFetch('contracts', 'POST', data);
+        if (isEditing) {
+          // ATUALIZAR
+          await supaFetch(`contracts?token=eq.${token}`, 'PATCH', data);
+        } else {
+          // CRIAR
+          await supaFetch('contracts', 'POST', data);
+        }
+
         clearInterval(interval);
         updateLoading(100);
-
         await new Promise(r => setTimeout(r, 400));
 
         const link = `${SITE_URL}/view?token=${token}`;
         document.getElementById('contract-link').value = link;
+        document.getElementById('generated-title').textContent = isEditing ? 'Contrato Atualizado' : 'Contrato Criado';
         document.getElementById('generated-link').style.display = 'block';
 
         loadingBar.style.display = 'none';
@@ -620,14 +817,21 @@
         btn.disabled = false;
 
         document.getElementById('generated-link').scrollIntoView({ behavior: 'smooth' });
-        showToast('✓ Contrato gerado com sucesso');
+        showToast(isEditing ? '✓ Contrato atualizado com sucesso' : '✓ Contrato gerado com sucesso');
+
+        // Se estava editando, sai do modo edição
+        if (isEditing) {
+          editingContract = null;
+          document.getElementById('edit-banner').style.display = 'none';
+          document.getElementById('btn-gerar').textContent = 'Gerar Contrato';
+        }
       } catch (err) {
         console.error(err);
         clearInterval(interval);
         loadingBar.style.display = 'none';
         loadingFill.style.width = '0%';
         btn.disabled = false;
-        showToast('Erro ao criar contrato');
+        showToast('Erro ao salvar contrato');
       }
     }
 
@@ -725,6 +929,7 @@
           </div>`;
 
         if (c.status === 'signed') {
+          // ASSINADO - Não pode editar, mas pode baixar PDF
           html += `
             <div style="background:var(--success-bg); border:1px solid var(--success-border); border-radius:var(--radius-sm); padding:16px; margin-bottom:16px;">
               <p style="font-family: 'Playfair Display', serif; font-weight:500; color:var(--sucesso); margin-bottom:10px; letter-spacing: 1px;">✓ Contrato Assinado</p>
@@ -740,6 +945,12 @@
 
             <button class="btn-primary" onclick="downloadContractPDF()" id="btn-pdf-modal" style="margin-bottom: 12px;">
               📥 Baixar Contrato em PDF
+            </button>`;
+        } else {
+          // PENDING ou VIEWED - Permite editar
+          html += `
+            <button class="btn-primary" onclick="editContract()" style="margin-bottom: 12px;">
+              ✏️ Editar Contrato
             </button>`;
         }
 
@@ -760,7 +971,14 @@
 
     function closeModal() {
       document.getElementById('modal-details').classList.remove('show');
-      currentModalContract = null;
+      // Não limpa currentModalContract aqui porque pode ser usado pelo PDF/Edit
+    }
+
+    // ===== EDITAR CONTRATO =====
+    function editContract() {
+      if (!currentModalContract) return;
+      closeModal();
+      enterEditMode(currentModalContract);
     }
 
     async function downloadContractPDF() {
