@@ -645,7 +645,7 @@
             <div class="info-item full"><div class="info-label">Local</div><div class="info-value">${c.event_location_name || '-'} — ${c.event_location_city || ''}</div></div>
           </div>`;
 
-        if (c.status === 'signed') {
+                if (c.status === 'signed') {
           html += `
             <div style="background:var(--success-bg); border:1px solid var(--success-border); border-radius:var(--radius-sm); padding:16px; margin-bottom:16px;">
               <p style="font-family: 'Playfair Display', serif; font-weight:500; color:var(--sucesso); margin-bottom:10px; letter-spacing: 1px;">✓ Contrato Assinado</p>
@@ -657,7 +657,10 @@
               </p>
               ${c.consent_image_use !== null ? `<p style="font-size:12px; color:var(--branco); margin-top:8px;"><strong style="color: var(--dourado-claro);">Imagem:</strong> ${c.consent_image_use ? '✓ Autorizado' : '✗ Não autorizado'}</p>` : ''}
               ${c.signature_data ? `<p style="font-size:12px; color:var(--dourado-claro); margin-top:10px;">Assinatura:</p><img src="${c.signature_data}" style="max-width:200px; margin-top:6px; border:1px solid var(--cinza); border-radius:6px; background:#fff; padding:4px;">` : ''}
-            </div>`;
+            </div>
+            <button class="btn-primary" onclick="downloadContractPDF('${c.token}')" style="margin-bottom: 12px;">
+              📥 Baixar Contrato em PDF
+            </button>`;
         }
 
         const link = `${SITE_URL}/view?token=${c.token}`;
