@@ -681,6 +681,13 @@
     function closeModal() {
       document.getElementById('modal-details').classList.remove('show');
     }
+     // ===== DOWNLOAD PDF DO ADMIN =====
+    async function downloadContractPDF(token) {
+      showToast('Preparando PDF...');
+      // Abre a view em nova aba - o botão de PDF vai estar lá
+      const url = `${SITE_URL}/view?token=${token}`;
+      window.open(url, '_blank');
+    }
   </script>
 
 </body>
