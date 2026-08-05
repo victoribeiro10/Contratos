@@ -6,6 +6,74 @@
   <title>Contrato — Entre Clicks</title>
   <link rel="stylesheet" href="contract.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
+
+  <!-- Bibliotecas para gerar PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    .logo-header {
+      text-align: center;
+      padding: 30px 20px 10px;
+      animation: fadeInDown 0.8s ease;
+    }
+    .logo-header img {
+      max-width: 280px;
+      width: 80%;
+      height: auto;
+    }
+    .logo-subtitulo {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 11px;
+      color: var(--cinza-suave);
+      letter-spacing: 3px;
+      text-transform: lowercase;
+      margin-top: 8px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--gold-border-soft);
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .success-logo {
+      text-align: center;
+      padding: 40px 20px 20px;
+    }
+    .success-logo img {
+      max-width: 200px;
+      width: 60%;
+      height: auto;
+    }
+    .btn-download-pdf {
+      width: 100%;
+      padding: 14px;
+      background: var(--grafite);
+      color: var(--dourado);
+      border: 1px solid var(--gold-border);
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-download-pdf:hover {
+      background: var(--preto-2);
+      border-color: var(--dourado);
+      box-shadow: 0 4px 20px rgba(212, 175, 122, 0.2);
+    }
+    .btn-download-pdf:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  </style>
 </head>
 <body>
 
@@ -18,10 +86,10 @@
 
   <div id="contract-screen" style="display:none;">
 
-    <div class="marca">
-      <div class="marca-logo">Entre Clicks</div>
-      <div class="marca-subtitulo">contrato de prestação de serviços</div>
+    <div class="logo-header">
+      <img src="https://scwznirvzwrphztvopbz.supabase.co/storage/v1/object/public/logos/logo-horizontal.png" alt="Entre Clicks">
     </div>
+    <div class="logo-subtitulo">contrato de prestação de serviços</div>
 
     <div class="container">
 
@@ -187,9 +255,8 @@
   </div>
 
   <div id="success-screen" class="success-screen">
-    <div class="marca">
-      <div class="marca-logo">Entre Clicks</div>
-      <div class="marca-subtitulo">sua memória revelada</div>
+    <div class="success-logo">
+      <img src="https://scwznirvzwrphztvopbz.supabase.co/storage/v1/object/public/logos/logo-vertical.png" alt="Entre Clicks">
     </div>
     <div class="container">
       <div class="success-icon">✓</div>
@@ -201,14 +268,18 @@
           Assinado em: <span id="signed-date"></span>
         </p>
       </div>
+
+      <button class="btn-download-pdf" id="btn-download-success" onclick="downloadPDF()">
+        📥 Baixar Contrato em PDF
+      </button>
+
       <div class="contract-footer" style="margin-top:40px;">· Entre Clicks ·</div>
     </div>
   </div>
 
   <div id="already-signed-screen" style="display:none;">
-    <div class="marca">
-      <div class="marca-logo">Entre Clicks</div>
-      <div class="marca-subtitulo">contrato de prestação de serviços</div>
+    <div class="logo-header">
+      <img src="https://scwznirvzwrphztvopbz.supabase.co/storage/v1/object/public/logos/logo-horizontal.png" alt="Entre Clicks">
     </div>
     <div class="container">
       <div class="card already-signed">
@@ -216,14 +287,17 @@
         <h2 style="font-family: 'Playfair Display', serif; color:var(--sucesso); margin-bottom:8px; letter-spacing: 1px;">Contrato já assinado</h2>
         <p style="color:var(--cinza-suave); font-size:13px;">Este contrato já foi aceito anteriormente.</p>
         <p style="color:var(--cinza-suave); margin-top:10px; font-size:11px; letter-spacing: 1px;" id="already-signed-info"></p>
+
+        <button class="btn-download-pdf" id="btn-download-already" onclick="downloadPDF()" style="max-width: 300px; margin: 20px auto 0;">
+          📥 Baixar Contrato em PDF
+        </button>
       </div>
     </div>
   </div>
 
   <div id="error-screen" style="display:none;">
-    <div class="marca">
-      <div class="marca-logo">Entre Clicks</div>
-      <div class="marca-subtitulo">contrato de prestação de serviços</div>
+    <div class="logo-header">
+      <img src="https://scwznirvzwrphztvopbz.supabase.co/storage/v1/object/public/logos/logo-horizontal.png" alt="Entre Clicks">
     </div>
     <div class="container" style="text-align:center; padding-top:40px;">
       <p style="font-size:48px; margin-bottom:16px;">✗</p>
@@ -237,6 +311,7 @@
   <script>
     const SUPABASE_URL = 'https://scwznirvzwrphztvopbz.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjd3puaXJ2endycGh6dHZvcGJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNzI2NzQsImV4cCI6MjA5NTY0ODY3NH0.PLvr547bIEJwjECKxQaoR7lpazs8GbSpLYLMDiGD4Po';
+    const LOGO_VERTICAL_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/object/public/logos/logo-vertical.png';
 
     let contractData = null;
     let signaturePad = null;
@@ -565,6 +640,8 @@
         let ip = '-';
         try { ip = (await (await fetch('https://api.ipify.org?format=json')).json()).ip; } catch(e) {}
 
+        const signatureImg = signaturePad.canvas.toDataURL('image/png');
+
         const res = await fetch(`${SUPABASE_URL}/rest/v1/contracts?token=eq.${contractData.token}`, {
           method: 'PATCH',
           headers: {
@@ -577,7 +654,7 @@
             status: 'signed',
             consent_image_use: consents.consent_image,
             consent_whatsapp: document.getElementById('consent_whatsapp').checked,
-            signature_data: signaturePad.canvas.toDataURL('image/png'),
+            signature_data: signatureImg,
             signed_name: name,
             signed_cpf: cpf,
             signed_at: new Date().toISOString(),
@@ -587,6 +664,17 @@
         });
 
         if (!res.ok) throw new Error('Erro');
+
+        // Atualiza os dados locais para gerar o PDF
+        contractData.status = 'signed';
+        contractData.consent_image_use = consents.consent_image;
+        contractData.consent_whatsapp = document.getElementById('consent_whatsapp').checked;
+        contractData.signature_data = signatureImg;
+        contractData.signed_name = name;
+        contractData.signed_cpf = cpf;
+        contractData.signed_at = new Date().toISOString();
+        contractData.signed_ip = ip;
+
         document.getElementById('signed-date').textContent = new Date().toLocaleString('pt-BR');
         showScreen('success');
       } catch (err) {
@@ -595,6 +683,575 @@
         btn.disabled = false;
         btn.innerHTML = 'Aceitar e Assinar Contrato';
       }
+    }
+
+    // ============================================
+    // GERAR PDF
+    // ============================================
+    async function downloadPDF() {
+      const btns = [
+        document.getElementById('btn-download-success'),
+        document.getElementById('btn-download-already')
+      ].filter(b => b);
+
+      btns.forEach(b => {
+        b.disabled = true;
+        b.innerHTML = '⏳ Gerando PDF...';
+      });
+
+      try {
+        await generatePDF(contractData);
+        btns.forEach(b => {
+          b.disabled = false;
+          b.innerHTML = '✅ PDF Baixado!';
+          setTimeout(() => {
+            b.innerHTML = '📥 Baixar Contrato em PDF';
+          }, 2000);
+        });
+      } catch (err) {
+        console.error(err);
+        showToast('Erro ao gerar PDF');
+        btns.forEach(b => {
+          b.disabled = false;
+          b.innerHTML = '📥 Baixar Contrato em PDF';
+        });
+      }
+    }
+
+    async function generatePDF(c) {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      // Carrega a logo
+      const logoImg = await loadImageAsBase64(LOGO_VERTICAL_URL);
+
+      const pageWidth = 210;
+      const pageHeight = 297;
+      const margin = 15;
+      const contentWidth = pageWidth - (margin * 2);
+      let y = margin;
+
+      // ========== FUNÇÕES AUXILIARES ==========
+      function checkPageBreak(needed = 10) {
+        if (y + needed > pageHeight - margin) {
+          addFooter();
+          doc.addPage();
+          y = margin;
+          addHeaderSmall();
+        }
+      }
+
+      function addHeaderSmall() {
+        doc.setFontSize(9);
+        doc.setTextColor(150, 150, 150);
+        doc.setFont('helvetica', 'italic');
+        doc.text('Entre Clicks — Contrato de Prestação de Serviços', pageWidth / 2, 10, { align: 'center' });
+        doc.setDrawColor(212, 175, 122);
+        doc.setLineWidth(0.3);
+        doc.line(margin, 12, pageWidth - margin, 12);
+        y = 18;
+      }
+
+      function addFooter() {
+        const totalPages = doc.internal.getNumberOfPages();
+        const currentPage = doc.internal.getCurrentPageInfo().pageNumber;
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+        doc.setFont('helvetica', 'italic');
+        doc.text(
+          `· Entre Clicks · Página ${currentPage}`,
+          pageWidth / 2,
+          pageHeight - 8,
+          { align: 'center' }
+        );
+      }
+
+      function addTitle(text) {
+        checkPageBreak(15);
+        doc.setFontSize(11);
+        doc.setTextColor(168, 136, 85);
+        doc.setFont('helvetica', 'bold');
+        doc.text(text.toUpperCase(), margin, y);
+        doc.setDrawColor(212, 175, 122);
+        doc.setLineWidth(0.3);
+        doc.line(margin, y + 1.5, margin + doc.getTextWidth(text.toUpperCase()), y + 1.5);
+        y += 7;
+        doc.setTextColor(50, 50, 50);
+        doc.setFont('helvetica', 'normal');
+      }
+
+      function addText(text, options = {}) {
+        const {
+          fontSize = 10,
+          fontStyle = 'normal',
+          color = [50, 50, 50],
+          maxWidth = contentWidth,
+          spacing = 5,
+          align = 'left'
+        } = options;
+
+        doc.setFontSize(fontSize);
+        doc.setFont('helvetica', fontStyle);
+        doc.setTextColor(...color);
+
+        const lines = doc.splitTextToSize(text, maxWidth);
+        lines.forEach(line => {
+          checkPageBreak(spacing);
+          if (align === 'center') {
+            doc.text(line, pageWidth / 2, y, { align: 'center' });
+          } else {
+            doc.text(line, margin, y);
+          }
+          y += spacing;
+        });
+      }
+
+      function addLine() {
+        checkPageBreak(5);
+        doc.setDrawColor(220, 220, 220);
+        doc.setLineWidth(0.1);
+        doc.line(margin, y, pageWidth - margin, y);
+        y += 5;
+      }
+
+      function addSpace(px = 5) {
+        y += px;
+      }
+
+      function addKeyValue(key, value) {
+        checkPageBreak(6);
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(80, 80, 80);
+        doc.text(key + ':', margin, y);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(30, 30, 30);
+        const keyWidth = doc.getTextWidth(key + ': ');
+        const valLines = doc.splitTextToSize(String(value || '-'), contentWidth - keyWidth);
+        doc.text(valLines[0], margin + keyWidth, y);
+        y += 5;
+
+        for (let i = 1; i < valLines.length; i++) {
+          checkPageBreak(5);
+          doc.text(valLines[i], margin + keyWidth, y);
+          y += 5;
+        }
+      }
+
+      // ========== CAPA ==========
+      // Logo centralizada
+      const logoWidth = 60;
+      const logoHeight = 60;
+      doc.addImage(logoImg, 'PNG', (pageWidth - logoWidth) / 2, y + 20, logoWidth, logoHeight);
+      y += logoHeight + 30;
+
+      doc.setFontSize(20);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(168, 136, 85);
+      doc.text('CONTRATO DE PRESTAÇÃO', pageWidth / 2, y, { align: 'center' });
+      y += 8;
+      doc.text('DE SERVIÇOS', pageWidth / 2, y, { align: 'center' });
+      y += 15;
+
+      doc.setDrawColor(212, 175, 122);
+      doc.setLineWidth(0.5);
+      doc.line(pageWidth / 2 - 30, y, pageWidth / 2 + 30, y);
+      y += 10;
+
+      doc.setFontSize(11);
+      doc.setTextColor(100, 100, 100);
+      doc.setFont('helvetica', 'italic');
+      doc.text('Entre Clicks Experiência Fotográfica', pageWidth / 2, y, { align: 'center' });
+      y += 20;
+
+      // Dados resumidos na capa
+      doc.setFontSize(10);
+      doc.setTextColor(50, 50, 50);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Contratante: ${c.client_name}`, pageWidth / 2, y, { align: 'center' });
+      y += 6;
+      doc.text(`Pacote: ${c.package_name}`, pageWidth / 2, y, { align: 'center' });
+      y += 6;
+      doc.text(`Data do evento: ${formatDate(c.event_date)}`, pageWidth / 2, y, { align: 'center' });
+      y += 6;
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(168, 136, 85);
+      doc.text(`Valor total: ${formatMoney(c.total_value)}`, pageWidth / 2, y, { align: 'center' });
+
+      // Status assinado
+      if (c.status === 'signed') {
+        y = pageHeight - 40;
+        doc.setFillColor(232, 245, 233);
+        doc.setDrawColor(76, 175, 80);
+        doc.roundedRect(pageWidth / 2 - 40, y, 80, 20, 3, 3, 'FD');
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(46, 125, 50);
+        doc.text('✓ ASSINADO', pageWidth / 2, y + 8, { align: 'center' });
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'normal');
+        doc.text(new Date(c.signed_at).toLocaleString('pt-BR'), pageWidth / 2, y + 14, { align: 'center' });
+      }
+
+      addFooter();
+
+      // ========== PÁGINA 2 - DADOS ==========
+      doc.addPage();
+      y = margin;
+      addHeaderSmall();
+
+      // CONTRATADA
+      addTitle('DADOS DA CONTRATADA');
+      addKeyValue('Razão Social', 'Entre Clicks Experiência Fotográfica');
+      addKeyValue('Responsável', 'Victor da Costa Ribeiro');
+      addKeyValue('CPF', '143.566.317-90');
+      addKeyValue('Sócia', 'Letícia Aparecida da Costa');
+      addKeyValue('CPF', '139.913.077-31');
+      addKeyValue('Endereço', 'Maximínio da Silva, 47, Alto Independência');
+      addKeyValue('Cidade', 'Cachoeiro de Itapemirim - ES');
+      addKeyValue('Contato', '(28) 99928-1772');
+      addKeyValue('E-mail', 'entreclickss@gmail.com');
+      addKeyValue('Instagram', '@entreclicks.oficial');
+
+      addSpace(5);
+
+      // CONTRATANTE
+      addTitle('DADOS DO(A) CONTRATANTE');
+      addKeyValue('Nome', c.client_name);
+      addKeyValue('CPF', c.client_cpf);
+      addKeyValue('Contato', c.client_phone);
+      addKeyValue('E-mail', c.client_email);
+      addKeyValue('Endereço', c.client_address);
+      addKeyValue('Cidade', c.client_city);
+
+      addSpace(5);
+
+      // EVENTO
+      addTitle('DADOS DO EVENTO');
+      addKeyValue('Data', formatDate(c.event_date));
+      addKeyValue('Horário Início', c.event_time_start || '-');
+      addKeyValue('Horário Término', c.event_time_end || '-');
+      addKeyValue('Local', c.event_location_name);
+      addKeyValue('Endereço', c.event_location_address);
+      addKeyValue('Cidade', c.event_location_city);
+
+      addSpace(5);
+
+      // PACOTE
+      addTitle('PACOTE CONTRATADO');
+      addKeyValue('Pacote', c.package_name);
+      addKeyValue('Valor', formatMoney(c.package_value));
+      addSpace(3);
+      addText('Inclusos:', { fontSize: 10, fontStyle: 'bold' });
+      addText(c.package_description || '', { fontSize: 9, spacing: 4 });
+
+      // ADICIONAIS
+      if (c.adicional_livro || c.adicional_ima || c.adicional_hora_extra || c.adicional_outros) {
+        addSpace(5);
+        addTitle('ADICIONAIS');
+        if (c.adicional_livro) addText('☑ Livro de Recordações — R$ 100,00', { fontSize: 9 });
+        if (c.adicional_ima) addText('☑ Imã Memória (até 200 fotos) — R$ 50,00', { fontSize: 9 });
+        if (c.adicional_hora_extra) addText('☑ Hora Extra — R$ 180,00/hora', { fontSize: 9 });
+        if (c.adicional_outros) addText(`☑ ${c.adicional_outros}`, { fontSize: 9 });
+      }
+
+      addSpace(5);
+
+      // VALORES
+      addTitle('VALORES E PAGAMENTO');
+      addKeyValue('Pacote', formatMoney(c.package_value));
+      if (c.adicional_valor > 0) addKeyValue('Adicionais', formatMoney(c.adicional_valor));
+      if (c.deslocamento_valor > 0) {
+        addKeyValue('Deslocamento', formatMoney(c.deslocamento_valor) + (c.deslocamento_distancia ? ` (${c.deslocamento_distancia})` : ''));
+      }
+      addLine();
+      addKeyValue('VALOR TOTAL', formatMoney(c.total_value));
+      addKeyValue('Entrada', formatMoney(c.entrada_value) + ' (na assinatura)');
+      addKeyValue('Saldo', formatMoney(c.saldo_value) + ' (até 7 dias antes do evento)');
+      addKeyValue('Forma de Pagamento', c.payment_method);
+
+      addFooter();
+
+      // ========== CLÁUSULAS ==========
+      doc.addPage();
+      y = margin;
+      addHeaderSmall();
+
+      addTitle('TERMOS E CONDIÇÕES');
+      addSpace(3);
+
+      const clausulas = [
+        {
+          num: 'CLÁUSULA 1ª — DO OBJETO',
+          texto: `1.1. A CONTRATADA prestará serviço de fotografia interativa com impressão instantânea de fotos em formato polaroid (9x6cm), com envio das imagens realizado pelos próprios convidados via QR Code, durante o evento contratado.
+
+1.2. O serviço inclui:
+a) Estação de trabalho montada no local do evento;
+b) Impressão instantânea das fotos enviadas;
+c) Mural de exposição das fotos durante o evento;
+d) Equipe técnica composta por 2 (dois) profissionais;
+e) Todo o material de impressão (papel e tinta);
+f) Itens específicos do pacote contratado.`
+        },
+        {
+          num: 'CLÁUSULA 2ª — DO PACOTE CONTRATADO',
+          texto: `Pacote: ${c.package_name} — ${formatMoney(c.package_value)}\n\n${c.package_description || ''}`
+        },
+        {
+          num: 'CLÁUSULA 3ª — DA DATA, HORÁRIO E LOCAL',
+          texto: `Data: ${formatDate(c.event_date)}
+Horário: ${c.event_time_start || '-'} às ${c.event_time_end || '-'}
+Local: ${c.event_location_name || '-'}
+Endereço: ${c.event_location_address || '-'}, ${c.event_location_city || '-'}
+
+A equipe da CONTRATADA chegará ao local com antecedência mínima de 30 (trinta) minutos para montagem da estação.
+
+Deslocamento: ${c.deslocamento_local ? 'Cachoeiro de Itapemirim — Sem taxa' : `${c.deslocamento_distancia || '-'} — ${formatMoney(c.deslocamento_valor)}`}`
+        },
+        {
+          num: 'CLÁUSULA 4ª — DO VALOR E CONDIÇÕES DE PAGAMENTO',
+          texto: `Valor total do serviço: ${formatMoney(c.total_value)}
+Entrada: ${formatMoney(c.entrada_value)} (na assinatura do contrato)
+Saldo: ${formatMoney(c.saldo_value)} (até 7 dias antes do evento)
+Forma de pagamento: ${c.payment_method || '-'}
+
+Dados para PIX:
+Chave: entreclickss@gmail.com
+Beneficiário: Victor da Costa Ribeiro
+Banco: InfinityPay
+
+O NÃO PAGAMENTO do saldo até 7 dias antes do evento poderá acarretar em CANCELAMENTO DA RESERVA, sem reembolso da entrada.`
+        },
+        {
+          num: 'CLÁUSULA 5ª — DAS OBRIGAÇÕES DA CONTRATADA',
+          texto: `5.1. Chegar ao local com antecedência mínima de 30 (trinta) minutos;
+5.2. Montar e testar todo o equipamento antes do início do serviço;
+5.3. Manter equipe uniformizada e apresentável;
+5.4. Manter equipamento reserva (backup) em caso de falha técnica;
+5.5. Realizar impressões conforme o tempo contratado;
+5.6. Deixar o mural montado até o final do evento;
+5.7. Entregar as fotos especiais e caixinha personalizada em até 15 (quinze) dias após o evento;
+5.8. Manter conduta profissional e cordial com todos os convidados.`
+        },
+        {
+          num: 'CLÁUSULA 6ª — DAS OBRIGAÇÕES DO(A) CONTRATANTE',
+          texto: `6.1. Fornecer informações necessárias com no mínimo 15 (quinze) dias de antecedência;
+
+6.2. Garantir no local do evento:
+a) Espaço mínimo de 1,5m x 1,5m para a estação;
+b) 1 (uma) tomada 110v OU 220v a até 5 metros da estação;
+c) Local COBERTO (proteção contra chuva/sol direto);
+d) Acesso ao local no horário de montagem (30 minutos antes);
+e) Conexão Wi-Fi ou sinal de celular estável para envio das fotos.
+
+6.3. Realizar o pagamento nas condições estabelecidas;
+6.4. Comunicar à CONTRATADA, com antecedência mínima de 48 horas, qualquer alteração no evento.`
+        },
+        {
+          num: 'CLÁUSULA 7ª — POLÍTICA DE CANCELAMENTO',
+          texto: `Cancelamento pelo(a) CONTRATANTE:
+a) Com MAIS DE 30 dias de antecedência: Reembolso integral da entrada, descontada taxa administrativa de 20%.
+b) Entre 15 e 30 dias de antecedência: Perda de 50% do valor pago.
+c) Entre 7 e 14 dias de antecedência: Perda de 100% do valor pago.
+d) Com MENOS de 7 dias: Perda de 100% do valor pago + cobrança do saldo restante.
+
+Cancelamento pela CONTRATADA:
+Em caso excepcional (força maior, doença grave da equipe, etc), será realizado REEMBOLSO INTEGRAL de todos os valores pagos, OU reagendamento sem custo adicional, a critério do(a) CONTRATANTE.`
+        },
+        {
+          num: 'CLÁUSULA 8ª — POLÍTICA DE ADIAMENTO',
+          texto: `8.1. O(a) CONTRATANTE pode solicitar adiamento SEM CUSTO ADICIONAL, desde que:
+a) A solicitação seja feita com mínimo de 15 dias de antecedência;
+b) A nova data tenha disponibilidade na agenda da CONTRATADA;
+c) A nova data seja dentro de 6 (seis) meses da data original.
+
+8.2. Adiamento fora dessas condições será tratado como CANCELAMENTO conforme Cláusula 7.`
+        },
+        {
+          num: 'CLÁUSULA 9ª — DIREITOS DE IMAGEM E USO DAS FOTOS',
+          texto: `9.1. O(a) CONTRATANTE ${c.consent_image_use === true ? 'AUTORIZOU' : c.consent_image_use === false ? 'NÃO AUTORIZOU' : 'deverá autorizar'} o uso de imagens do evento (setup, mural, fotos gerais SEM foco em rostos identificáveis) para fins de:
+a) Divulgação em redes sociais;
+b) Site e materiais promocionais;
+c) Portfólio profissional.
+
+9.2. As fotos impressas entregues aos convidados são de propriedade dos mesmos.
+9.3. A CONTRATADA se compromete a NUNCA divulgar imagens que exponham menores de idade sem autorização expressa dos responsáveis.`
+        },
+        {
+          num: 'CLÁUSULA 10ª — IMPREVISTOS E FORÇA MAIOR',
+          texto: `10.1. Considera-se motivo de FORÇA MAIOR:
+a) Desastres naturais (enchentes, ventanias, etc);
+b) Problemas mecânicos graves no veículo da equipe;
+c) Doença grave ou hospitalização da equipe;
+d) Restrições sanitárias/legais que impeçam o evento;
+e) Outros eventos inevitáveis e imprevisíveis.
+
+10.2. Em caso de força maior comprovada, as partes negociarão em comum acordo: reagendamento sem custo, reembolso integral ou substituição da equipe.`
+        },
+        {
+          num: 'CLÁUSULA 11ª — LIMITAÇÕES DE RESPONSABILIDADE',
+          texto: `11.1. A CONTRATADA NÃO se responsabiliza por:
+a) Fotos enviadas com má qualidade pelos convidados;
+b) Sinal de internet/telefonia deficiente no local;
+c) Interrupções de energia elétrica no local do evento;
+d) Atrasos causados por trânsito extraordinário;
+e) Danos causados por terceiros ao equipamento.
+
+11.2. A CONTRATANTE se responsabiliza por:
+a) Danos causados ao equipamento por convidados;
+b) Uso indevido da estação por convidados;
+c) Consequências de omissão de informações essenciais.`
+        },
+        {
+          num: 'CLÁUSULA 12ª — DISPOSIÇÕES GERAIS',
+          texto: `12.1. Este contrato passa a valer a partir de:
+a) Confirmação de leitura via WhatsApp;
+b) Pagamento da entrada;
+c) Envio de aceite digital ou assinatura eletrônica.
+
+12.2. Qualquer alteração deste contrato deverá ser feita por escrito e acordada entre as partes.
+12.3. Este contrato é firmado em conformidade com o Código Civil Brasileiro (Lei nº 10.406/2002) e o Código de Defesa do Consumidor (Lei nº 8.078/1990).`
+        },
+        {
+          num: 'CLÁUSULA 13ª — FORO',
+          texto: `13.1. Fica eleito o foro da Comarca de Cachoeiro de Itapemirim - ES para dirimir quaisquer controvérsias oriundas deste contrato.`
+        }
+      ];
+
+      clausulas.forEach((cl, i) => {
+        checkPageBreak(20);
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(168, 136, 85);
+        doc.text(cl.num, margin, y);
+        y += 6;
+        addText(cl.texto, { fontSize: 9, spacing: 4.5 });
+        addSpace(4);
+      });
+
+      if (c.notes) {
+        checkPageBreak(20);
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(168, 136, 85);
+        doc.text('OBSERVAÇÕES ADICIONAIS', margin, y);
+        y += 6;
+        addText(c.notes, { fontSize: 9, spacing: 4.5 });
+      }
+
+      addFooter();
+
+      // ========== PÁGINA - ASSINATURA ==========
+      if (c.status === 'signed') {
+        doc.addPage();
+        y = margin;
+        addHeaderSmall();
+
+        addTitle('ACEITE DIGITAL E ASSINATURA');
+        addSpace(5);
+
+        addText('Declaro que li, entendi e concordo integralmente com todos os termos e condições estabelecidos neste contrato.', { fontSize: 10, fontStyle: 'italic', spacing: 6 });
+        addSpace(5);
+
+        addTitle('AUTORIZAÇÕES');
+        addKeyValue('Uso de imagem', c.consent_image_use ? '✓ SIM - Autorizo' : '✗ NÃO autorizo');
+        addKeyValue('Comunicação por WhatsApp', c.consent_whatsapp ? '✓ Aceito' : '✗ Não aceito');
+        addSpace(10);
+
+        addTitle('DADOS DA ASSINATURA');
+        addKeyValue('Nome', c.signed_name);
+        addKeyValue('CPF', c.signed_cpf);
+        addKeyValue('Data/Hora', new Date(c.signed_at).toLocaleString('pt-BR'));
+        addKeyValue('IP', c.signed_ip);
+        addKeyValue('Dispositivo', (c.signed_device || '').substring(0, 80));
+
+        addSpace(15);
+
+        // Assinatura em imagem
+        if (c.signature_data) {
+          checkPageBreak(60);
+          doc.setFontSize(10);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(80, 80, 80);
+          doc.text('Assinatura:', margin, y);
+          y += 5;
+
+          try {
+            doc.setDrawColor(200, 200, 200);
+            doc.setLineWidth(0.2);
+            doc.rect(margin, y, 80, 40);
+            doc.addImage(c.signature_data, 'PNG', margin + 2, y + 2, 76, 36);
+            y += 45;
+
+            doc.setDrawColor(50, 50, 50);
+            doc.setLineWidth(0.3);
+            doc.line(margin, y, margin + 80, y);
+            y += 4;
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(80, 80, 80);
+            doc.text(c.signed_name || '', margin, y);
+            y += 4;
+            doc.setFontSize(8);
+            doc.setTextColor(120, 120, 120);
+            doc.text(`CPF: ${c.signed_cpf || '-'}`, margin, y);
+          } catch (e) {
+            console.error('Erro ao adicionar assinatura:', e);
+          }
+        }
+
+        // Assinatura da contratada
+        y += 20;
+        checkPageBreak(30);
+        doc.setDrawColor(50, 50, 50);
+        doc.setLineWidth(0.3);
+        doc.line(pageWidth - margin - 80, y, pageWidth - margin, y);
+        y += 4;
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(80, 80, 80);
+        doc.text('CONTRATADA', pageWidth - margin - 40, y, { align: 'center' });
+        y += 4;
+        doc.setFont('helvetica', 'normal');
+        doc.text('Entre Clicks Experiência Fotográfica', pageWidth - margin - 40, y, { align: 'center' });
+        y += 4;
+        doc.text('Victor da Costa Ribeiro', pageWidth - margin - 40, y, { align: 'center' });
+        y += 4;
+        doc.text('CPF: 143.566.317-90', pageWidth - margin - 40, y, { align: 'center' });
+
+        addFooter();
+      }
+
+      // ========== SALVA O PDF ==========
+      const fileName = `Contrato_EntreClicks_${(c.client_name || 'Cliente').replace(/\s+/g, '_')}_${formatDate(c.event_date).replace(/\//g, '-')}.pdf`;
+      doc.save(fileName);
+    }
+
+    // Carrega imagem como base64 (pra funcionar no jsPDF)
+    function loadImageAsBase64(url) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          try {
+            resolve(canvas.toDataURL('image/png'));
+          } catch(e) {
+            reject(e);
+          }
+        };
+        img.onerror = reject;
+        img.src = url;
+      });
     }
 
     function showScreen(s) {
