@@ -490,7 +490,7 @@ const pkgVal = parseFloat(document.getElementById('package_value').value);
 
       try {
         await supaFetch('contracts', 'POST', data);
-        const link = `${SITE_URL}/contratos/view.html?token=${token}`;
+        const link = `${SITE_URL}/view.html?token=${token}`;
         document.getElementById('contract-link').value = link;
         document.getElementById('generated-link').style.display = 'block';
         document.getElementById('generated-link').scrollIntoView({ behavior: 'smooth' });
