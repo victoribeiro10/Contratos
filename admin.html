@@ -515,7 +515,7 @@ const ASSINATURA_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/obje
       if (tab === 'list') loadContracts();
     }
 
-    async function createContract() {
+        async function createContract() {
       const name = document.getElementById('client_name').value.trim();
       const pkgName = document.getElementById('package_name').value;
       if (!pkgName) { showToast('Selecione um pacote'); return; }
@@ -525,6 +525,117 @@ const ASSINATURA_URL = 'https://scwznirvzwrphztvopbz.supabase.co/storage/v1/obje
       if (!name) { showToast('Preencha o nome do contratante'); return; }
       if (!pkgVal) { showToast('Preencha o valor do pacote'); return; }
       if (!eventDate) { showToast('Preencha a data do evento'); return; }
+
+      const adicVal = parseFloat(document.getElementById('adicional_valor').value) || 0;
+      const deslocVal = parseFloat(document.getElementById('deslocamento_valor').value) || 0;
+      const entradaVal = parseFloat(document.getElementById('entrada_value').value) || 0;
+      const totalVal = pkgVal + adicVal + deslocVal;
+      const saldoVal = totalVal - entradaVal;
+      const token = generateToken();
+
+      const data = {
+        token,
+        client_name: name,
+        client_cpf: document.getElementById('client_cpf').value.trim(),
+        client_phone: document.getElementById('client_phone').value.trim(),
+        client_email: document.getElementById('client_email').value.trim(),
+        client_address: document.getElementById('client_address').value.trim(),
+        client_city: document.getElementById('client_city').value.trim(),
+        event_date: eventDate,
+        event_time_start: document.getElementById('event_time_start').value || null,
+        event_time_end: document.getElementById('event_time_end').value || null,
+        event_location_name: document.getElementById('event_location_name').value.trim(),
+        event_location_address: document.getElementById('event_location_address').value.trim(),
+        event_location_city: document.getElementById('event_location_city').value.trim(),
+        package_name: pkgName,
+        package_value: pkgVal,
+        package_description: document.getElementById('package_description').value.trim(),
+        adicional_livro: document.getElementById('adicional_livro').checked,
+        adicional_ima: document.getElementById('adicional_ima').checked,
+        adicional_hora_extra: document.getElementById('adicional_hora_extra').checked,
+        adicional_outros: document.getElementById('adicional_outros').value.trim(),
+        adicional_valor: adicVal,
+        deslocamento_local: deslocLocal,
+        deslocamento_distancia: document.getElementById('deslocamento_distancia').value.trim(),
+        deslocamento_valor: deslocVal,
+        total_value: totalVal,
+        entrada_value: entradaVal,
+        saldo_value: saldoVal > 0 ? saldoVal : 0,
+        payment_method: document.getElementById('payment_method').value,
+        notes: document.getElementById('notes').value.trim(),
+        status: 'pending'
+      };
+
+      // ===== BARRA DE LOADING =====
+      const btn = document.getElementById('btn-gerar');
+      const loadingBar = document.getElementById('loading-bar');
+      const loadingFill = document.getElementById('loading-fill');
+      const loadingMessage = document.getElementById('loading-message');
+
+      btn.disabled = true;
+      loadingBar.style.display = 'block';
+
+      const messages = [
+        { pct: 0, texto: 'Preparando contrato...' },
+        { pct: 30, texto: 'Salvando informações...' },
+        { pct: 60, texto: 'Gerando link seguro...' },
+        { pct: 90, texto: 'Finalizando...' }
+      ];
+
+      function updateLoading(pct) {
+        loadingFill.style.width = pct + '%';
+        for (let i = messages.length - 1; i >= 0; i--) {
+          if (pct >= messages[i].pct) {
+            if (loadingMessage.textContent !== messages[i].texto) {
+              loadingMessage.style.opacity = '0';
+              setTimeout(() => {
+                loadingMessage.textContent = messages[i].texto;
+                loadingMessage.style.opacity = '1';
+              }, 150);
+            }
+            break;
+          }
+        }
+      }
+
+      // Simulação de progresso
+      let progresso = 0;
+      const interval = setInterval(() => {
+        progresso += Math.random() * 8;
+        if (progresso >= 70) {
+          progresso = 70;
+          clearInterval(interval);
+        }
+        updateLoading(progresso);
+      }, 120);
+
+      try {
+        await supaFetch('contracts', 'POST', data);
+        clearInterval(interval);
+        updateLoading(100);
+
+        await new Promise(r => setTimeout(r, 400));
+
+        const link = `${SITE_URL}/view?token=${token}`;
+        document.getElementById('contract-link').value = link;
+        document.getElementById('generated-link').style.display = 'block';
+
+        // Esconde a barra de loading
+        loadingBar.style.display = 'none';
+        loadingFill.style.width = '0%';
+        btn.disabled = false;
+
+        document.getElementById('generated-link').scrollIntoView({ behavior: 'smooth' });
+        showToast('✓ Contrato gerado com sucesso');
+      } catch (err) {
+        console.error(err);
+        clearInterval(interval);
+        loadingBar.style.display = 'none';
+        loadingFill.style.width = '0%';
+        btn.disabled = false;
+        showToast('Erro ao criar contrato');
+      }
+    }
 
       const adicVal = parseFloat(document.getElementById('adicional_valor').value) || 0;
       const deslocVal = parseFloat(document.getElementById('deslocamento_valor').value) || 0;
