@@ -580,6 +580,46 @@ const pkgVal = parseFloat(document.getElementById('package_value').value);
   }
 }
 
+    const badges = {
+      pending: '<span class="badge badge-pending">⏳ Pendente</span>',
+      viewed: '<span class="badge badge-viewed">👁️ Visualizado</span>',
+      signed: '<span class="badge badge-signed">✅ Assinado</span>'
+    };
+
+    let html = '<div class="contracts-list">';
+    contracts.forEach(c => {
+      const pkgName = c.package_name || 'Pacote';
+      const eventDate = c.event_date ? formatDate(c.event_date) : '-';
+      const totalVal = c.total_value || 0;
+      const locationName = c.event_location_name || '';
+
+      html += `
+        <div class="contract-card" onclick="showDetails('${c.token}')">
+          <div class="contract-card-info">
+            <h3>${c.client_name}</h3>
+            <p>📦 ${pkgName} • 📅 ${eventDate}</p>
+            <div style="margin-top:8px;">${badges[c.status] || badges.pending}</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="contract-card-value">${formatMoney(totalVal)}</div>
+            <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">
+              ${locationName}
+            </p>
+          </div>
+        </div>`;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+  } catch (err) {
+    console.error('Erro ao carregar contratos:', err);
+    container.innerHTML = `
+      <div style="text-align:center; padding:40px; color:var(--danger);">
+        <p>❌ Erro ao carregar contratos</p>
+        <p style="font-size:12px; margin-top:8px; color:var(--text-muted);">${err.message}</p>
+      </div>`;
+  }
+}
+
     // ===== DETALHES =====
     async function showDetails(token) {
       try {
