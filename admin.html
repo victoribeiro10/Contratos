@@ -258,9 +258,28 @@
           </div>
         </div>
 
-        <button class="btn-primary" onclick="createContract()">
+                <button class="btn-primary" id="btn-gerar" onclick="createContract()">
           Gerar Contrato
         </button>
+
+        <!-- BARRA DE LOADING -->
+        <div id="loading-bar" style="display:none; margin-top: 12px;">
+          <div style="text-align: center; font-family: 'Playfair Display', serif; font-style: italic; font-size: 12px; color: var(--dourado-claro); letter-spacing: 2px; margin-bottom: 8px;" id="loading-message">
+            Gerando contrato...
+          </div>
+          <div style="width: 100%; height: 4px; background: rgba(212, 175, 122, 0.15); border-radius: 10px; overflow: hidden; position: relative;">
+            <div id="loading-fill" style="height: 100%; width: 0%; background: linear-gradient(90deg, var(--dourado-escuro), var(--dourado), var(--dourado-claro)); border-radius: 10px; transition: width 0.4s ease; position: relative; overflow: hidden;">
+              <div style="content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: shimmerBar 1.5s infinite;"></div>
+            </div>
+          </div>
+        </div>
+
+        <style>
+          @keyframes shimmerBar {
+            0% { left: -100%; }
+            100% { left: 100%; }
+          }
+        </style>
 
         <div id="generated-link" style="display:none; margin-top: 16px;">
           <div class="card" style="border-color: var(--dourado);">
