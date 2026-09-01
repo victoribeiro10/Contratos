@@ -693,6 +693,7 @@ body {
   font-weight: 500;
   color: var(--branco);
   margin-bottom: 4px;
+  text-transform: uppercase; /* << ADICIONADO AQUI */
 }
 
 .contract-card-info p {
