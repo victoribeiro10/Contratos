@@ -58,20 +58,15 @@
 </head>
 <body>
 
-  <!-- ===== TELA DE LOGIN ===== -->
+  <!-- Acesso centralizado: este painel só é liberado pelo HUB autenticado. -->
   <div id="login-screen" class="login-container">
     <div class="login-box">
       <div class="login-logo">
         <div class="login-logo-icon">🔐</div>
         <h1>Entre Clicks</h1>
-        <p>painel administrativo</p>
+        <p>acesso pelo HUB</p>
       </div>
-      <div class="form-group">
-        <label>Senha</label>
-        <input type="password" id="login-password" placeholder="Digite sua senha" autocomplete="off">
-      </div>
-      <button class="btn-primary" onclick="doLogin()">Entrar</button>
-      <p id="login-error" style="color: var(--erro); font-size: 12px; text-align: center; margin-top: 12px; display: none; letter-spacing: 1px;">Senha incorreta</p>
+      <p style="color:var(--cinza-texto);font-size:13px;line-height:1.7;text-align:center;">Abra este painel pela Central do HUB EntreClicks após entrar com sua senha.</p>
     </div>
   </div>
 
@@ -371,7 +366,6 @@
   <div class="toast" id="toast"></div>
     <script>
     // ===== CONFIG =====
-    const ADMIN_PASSWORD = 'admin';
     const SUPABASE_URL = 'https://scwznirvzwrphztvopbz.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjd3puaXJ2endycGh6dHZvcGJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwNzI2NzQsImV4cCI6MjA5NTY0ODY3NH0.PLvr547bIEJwjECKxQaoR7lpazs8GbSpLYLMDiGD4Po';
     const SITE_URL = 'https://contratos-brown.vercel.app';
@@ -382,42 +376,19 @@
     let editingContract = null; // null = criando novo, objeto = editando
     let currentHubEventId = null;
 
-    // ===== LOGIN =====
-    function checkLogin() {
-      const isLogged = sessionStorage.getItem('ec_logged') === 'true';
-      if (isLogged) {
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('app').style.display = 'block';
-      } else {
-        document.getElementById('login-screen').style.display = 'flex';
-        document.getElementById('app').style.display = 'none';
-        setTimeout(() => document.getElementById('login-password').focus(), 100);
-      }
-    }
+    // ===== AUTORIZAÇÃO CENTRALIZADA PELO HUB =====
+    let hubAuthorized = false;
 
-    function doLogin() {
-      const pwd = document.getElementById('login-password').value;
-      const errEl = document.getElementById('login-error');
-      if (pwd === ADMIN_PASSWORD) {
-        sessionStorage.setItem('ec_logged', 'true');
-        errEl.style.display = 'none';
-        checkLogin();
-        updateResumo();
-        if (pendingHubEvent) {
-          const eventoPendente = pendingHubEvent;
-          pendingHubEvent = null;
-          preencherContratoComEventoHub(eventoPendente);
-        }
-      } else {
-        errEl.style.display = 'block';
-        document.getElementById('login-password').value = '';
-        setTimeout(() => errEl.style.display = 'none', 3000);
-      }
+    function checkLogin() {
+      document.getElementById('login-screen').style.display = hubAuthorized ? 'none' : 'flex';
+      document.getElementById('app').style.display = hubAuthorized ? 'block' : 'none';
     }
 
     function doLogout() {
-      sessionStorage.removeItem('ec_logged');
-      checkLogin();
+      // O logout é centralizado: o botão retorna à agenda do HUB.
+      if (window.parent !== window) {
+        window.parent.postMessage({ type: 'EC_HUB_RETURN_TO_HUB' }, 'https://entreclicks-gestao.vercel.app');
+      }
     }
 
     // Integração simples com o HUB: recebe dados somente da origem oficial da agenda.
@@ -425,7 +396,7 @@
 
     function receberEventoDoHub(evento) {
       if (!evento || typeof evento !== 'object' || !evento.id) return;
-      if (sessionStorage.getItem('ec_logged') !== 'true') {
+      if (!hubAuthorized) {
         pendingHubEvent = evento;
         return;
       }
@@ -521,6 +492,18 @@
     }
     window.addEventListener('message',async(event)=>{
       if(event.origin!=='https://entreclicks-gestao.vercel.app'||event.source!==window.parent) return;
+      if(event.data?.type==='EC_HUB_AUTHORIZED') {
+        hubAuthorized = true;
+        sessionStorage.setItem('ec_logged','true');
+        checkLogin();
+        updateResumo();
+        if (pendingHubEvent) {
+          const eventoPendente = pendingHubEvent;
+          pendingHubEvent = null;
+          preencherContratoComEventoHub(eventoPendente);
+        }
+        return;
+      }
       if(event.data?.type==='EC_HUB_REQUEST_CONTRACTS'){enviarStatusContratosAoHub();return;}
       if(event.data?.type==='EC_HUB_REQUEST_LEGACY_CONTRACTS'){await enviarContratosAntigosAoHub();return;}
       if(event.data?.type==='EC_HUB_LINK_LEGACY_CONTRACT'){
@@ -542,11 +525,8 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       checkLogin();
-      const pwdInput = document.getElementById('login-password');
-      if (pwdInput) {
-        pwdInput.addEventListener('keypress', (e) => {
-          if (e.key === 'Enter') doLogin();
-        });
+      if (window.parent !== window) {
+        window.parent.postMessage({ type: 'EC_HUB_AUTH_REQUEST' }, 'https://entreclicks-gestao.vercel.app');
       }
     });
 
