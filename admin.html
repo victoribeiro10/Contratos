@@ -380,6 +380,7 @@
 
     // ===== ESTADO DE EDIÇÃO =====
     let editingContract = null; // null = criando novo, objeto = editando
+    let currentHubEventId = null;
 
     // ===== LOGIN =====
     function checkLogin() {
@@ -423,7 +424,7 @@
     let pendingHubEvent = null;
 
     function receberEventoDoHub(evento) {
-      if (!evento || typeof evento !== 'object') return;
+      if (!evento || typeof evento !== 'object' || !evento.id) return;
       if (sessionStorage.getItem('ec_logged') !== 'true') {
         pendingHubEvent = evento;
         return;
@@ -431,7 +432,31 @@
       preencherContratoComEventoHub(evento);
     }
 
-    function preencherContratoComEventoHub(evento) {
+    async function preencherContratoComEventoHub(evento) {
+      currentHubEventId = String(evento.id);
+      let existentes;
+      try {
+        existentes = await supaFetch(`contracts?hub_event_id=eq.${encodeURIComponent(currentHubEventId)}&select=*`);
+      } catch (err) {
+        console.error('Não foi possível verificar o vínculo do contrato:', err);
+        showToast('Não consegui verificar se este evento já tem contrato. Tente novamente.');
+        return;
+      }
+
+      if (existentes.length) {
+        const contratoExistente = existentes[0];
+        if (contratoExistente.status === 'signed') {
+          currentHubEventId = String(evento.id);
+          showToast('Este evento já tem contrato assinado. Não será criado outro.');
+          showDetails(contratoExistente.token);
+          return;
+        }
+        enterEditMode(contratoExistente);
+        currentHubEventId = String(evento.id);
+        showToast('Contrato existente localizado. Abrimos o mesmo contrato para evitar duplicidade.');
+        return;
+      }
+
       editingContract = null;
       clearForm();
       document.getElementById('client_name').value = evento.cliente || '';
@@ -440,15 +465,43 @@
       document.getElementById('event_time_start').value = evento.inicio || '';
       document.getElementById('event_time_end').value = evento.termino || '';
       document.getElementById('event_location_name').value = evento.local || '';
+      document.getElementById('edit-banner').style.display = 'none';
+      document.getElementById('btn-gerar').textContent = 'Gerar Contrato';
       // O pacote e os valores são confirmados manualmente para evitar divergência
       // entre a tabela de preços da agenda e os pacotes cadastrados no contrato.
       showTab('create');
       showToast('Dados do evento importados. Confira os dados e selecione o pacote.');
     }
 
+    function publicarStatusContratos(contracts) {
+      if (window.parent === window) return;
+      const resumo = (contracts || [])
+        .filter(c => c.hub_event_id)
+        .map(c => ({
+          hub_event_id: String(c.hub_event_id),
+          status: c.status || 'pending',
+          token: c.token || '',
+          signed_at: c.signed_at || null
+        }));
+      window.parent.postMessage({ type: 'EC_CONTRACT_STATUS_UPDATE', contracts: resumo }, 'https://entreclicks-gestao.vercel.app');
+    }
+
+    async function enviarStatusContratosAoHub() {
+      try {
+        const contracts = await supaFetch('contracts?select=hub_event_id,status,token,signed_at&hub_event_id=not.is.null');
+        publicarStatusContratos(contracts);
+      } catch (err) {
+        console.error('Não foi possível atualizar os status no HUB:', err);
+      }
+    }
+
     window.addEventListener('message', (event) => {
       if (event.origin !== 'https://entreclicks-gestao.vercel.app') return;
       if (event.source !== window.parent) return;
+      if (event.data?.type === 'EC_HUB_REQUEST_CONTRACTS') {
+        enviarStatusContratosAoHub();
+        return;
+      }
       if (event.data?.type !== 'EC_HUB_PREFILL_CONTRACT') return;
       receberEventoDoHub(event.data.event);
     });
@@ -755,6 +808,7 @@
       const token = isEditing ? editingContract.token : generateToken();
 
       const data = {
+        hub_event_id: (isEditing && editingContract.hub_event_id) ? String(editingContract.hub_event_id) : (currentHubEventId || null),
         client_name: name,
         client_cpf: document.getElementById('client_cpf').value.trim(),
         client_phone: document.getElementById('client_phone').value.trim(),
@@ -861,6 +915,8 @@
 
         document.getElementById('generated-link').scrollIntoView({ behavior: 'smooth' });
         showToast(isEditing ? '✓ Contrato atualizado com sucesso' : '✓ Contrato gerado com sucesso');
+        await enviarStatusContratosAoHub();
+        currentHubEventId = null;
 
         // Se estava editando, sai do modo edição
         if (isEditing) {
@@ -906,6 +962,7 @@
 
       try {
         const contracts = await supaFetch('contracts?order=created_at.desc');
+        publicarStatusContratos(contracts);
         if (!contracts.length) {
           container.innerHTML = `
             <div style="text-align:center; padding:60px 20px; color:var(--cinza-suave);">
