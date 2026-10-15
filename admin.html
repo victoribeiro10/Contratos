@@ -54,6 +54,73 @@
       border-color: var(--erro);
       color: var(--erro);
     }
+
+    /* ===== ABAS DE STATUS DOS CONTRATOS ===== */
+    .contract-status-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .contract-status-tab {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-width: 0;
+      padding: 13px 10px;
+      border: 1px solid var(--gold-border-soft);
+      border-radius: var(--radius-sm);
+      background: var(--preto-2);
+      color: var(--cinza-suave);
+      font: 600 11px 'Inter', sans-serif;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all .2s ease;
+    }
+    .contract-status-tab:hover {
+      border-color: var(--gold-border);
+      color: var(--branco);
+    }
+    .contract-status-tab.active {
+      color: var(--dourado);
+      border-color: var(--dourado);
+      background: rgba(212, 175, 122, .1);
+      box-shadow: inset 0 0 10px rgba(212, 175, 122, .06);
+    }
+    .contract-status-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 22px;
+      height: 22px;
+      padding: 0 6px;
+      border: 1px solid currentColor;
+      border-radius: 20px;
+      font-size: 10px;
+      letter-spacing: 0;
+    }
+    .contracts-empty-status {
+      text-align: center;
+      padding: 38px 20px;
+      color: var(--cinza-suave);
+      background: var(--preto-2);
+      border: 1px solid var(--gold-border-soft);
+      border-radius: var(--radius-sm);
+      line-height: 1.7;
+    }
+    @media (max-width: 520px) {
+      .contract-status-tabs { gap: 6px; }
+      .contract-status-tab {
+        flex-direction: column;
+        gap: 5px;
+        padding: 10px 5px;
+        font-size: 9px;
+        letter-spacing: .5px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -971,14 +1038,23 @@
       window.open(url, '_blank');
     }
 
+    let loadedContracts = [];
+    let activeContractStatus = 'signed';
+
+    function getContractStatus(status) {
+      return status === 'signed' ? 'signed' : status === 'viewed' ? 'viewed' : 'pending';
+    }
+
     async function loadContracts() {
       const container = document.getElementById('contracts-container');
       container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Carregando...</p></div>';
 
       try {
         const contracts = await supaFetch('contracts?order=created_at.desc');
-        publicarStatusContratos(contracts);
-        if (!contracts.length) {
+        loadedContracts = Array.isArray(contracts) ? contracts : [];
+        publicarStatusContratos(loadedContracts);
+
+        if (!loadedContracts.length) {
           container.innerHTML = `
             <div style="text-align:center; padding:60px 20px; color:var(--cinza-suave);">
               <p style="font-size:48px; margin-bottom:16px;">📋</p>
@@ -987,35 +1063,94 @@
           return;
         }
 
-        const badges = {
-          pending: '<span class="badge badge-pending">Pendente</span>',
-          viewed: '<span class="badge badge-viewed">Visualizado</span>',
-          signed: '<span class="badge badge-signed">Assinado</span>'
-        };
-
-        let html = '<div class="contracts-list">';
-        contracts.forEach(c => {
-          html += `
-            <div class="contract-card" onclick="showDetails('${c.token}')">
-              <div class="contract-card-info">
-                <h3>${c.client_name}</h3>
-                <p>${c.package_name || 'Pacote'} • ${c.event_date ? formatDate(c.event_date) : '-'}</p>
-                <div style="margin-top:8px;">${badges[c.status] || badges.pending}</div>
-              </div>
-              <div style="text-align:right;">
-                <div class="contract-card-value">${formatMoney(c.total_value || 0)}</div>
-                <p style="font-size:10px; color:var(--cinza-suave); margin-top:4px; letter-spacing: 1px;">
-                  ${c.event_location_name || ''}
-                </p>
-              </div>
-            </div>`;
-        });
-        html += '</div>';
-        container.innerHTML = html;
+        renderContractStatusTabs();
+        renderContractsByStatus(activeContractStatus);
       } catch (err) {
         console.error('Erro:', err);
         container.innerHTML = `<div style="text-align:center; padding:40px; color:var(--erro);">Erro ao carregar</div>`;
       }
+    }
+
+    function renderContractStatusTabs() {
+      const counts = { signed: 0, pending: 0, viewed: 0 };
+      loadedContracts.forEach(contract => counts[getContractStatus(contract.status)]++);
+
+      const tabs = [
+        { key: 'signed', label: 'Assinados' },
+        { key: 'pending', label: 'Pendentes' },
+        { key: 'viewed', label: 'Visualizados' }
+      ];
+
+      const container = document.getElementById('contracts-container');
+      container.innerHTML = `
+        <div class="contract-status-tabs" role="tablist" aria-label="Filtrar contratos por status">
+          ${tabs.map(tab => `
+            <button type="button"
+              class="contract-status-tab ${tab.key === activeContractStatus ? 'active' : ''}"
+              role="tab"
+              aria-selected="${tab.key === activeContractStatus}"
+              onclick="filterContractsByStatus('${tab.key}')">
+              <span>${tab.label}</span>
+              <span class="contract-status-count">${counts[tab.key]}</span>
+            </button>`).join('')}
+        </div>
+        <div id="contracts-filtered-list" role="tabpanel"></div>`;
+    }
+
+    function filterContractsByStatus(status) {
+      if (!['signed', 'pending', 'viewed'].includes(status)) return;
+      activeContractStatus = status;
+      renderContractStatusTabs();
+      renderContractsByStatus(status);
+    }
+
+    function renderContractsByStatus(status) {
+      const listContainer = document.getElementById('contracts-filtered-list');
+      if (!listContainer) return;
+
+      const filtered = loadedContracts.filter(contract => getContractStatus(contract.status) === status);
+      const labels = {
+        signed: { title: 'Nenhum contrato assinado', description: 'Os contratos assinados aparecerão aqui.' },
+        pending: { title: 'Nenhum contrato pendente', description: 'Não há contratos aguardando visualização ou assinatura.' },
+        viewed: { title: 'Nenhum contrato visualizado', description: 'Os contratos visualizados e ainda não assinados aparecerão aqui.' }
+      };
+
+      if (!filtered.length) {
+        listContainer.innerHTML = `
+          <div class="contracts-empty-status">
+            <p style="font-size:32px; margin-bottom:8px;">📋</p>
+            <strong>${labels[status].title}</strong>
+            <p>${labels[status].description}</p>
+          </div>`;
+        return;
+      }
+
+      const badges = {
+        pending: '<span class="badge badge-pending">Pendente</span>',
+        viewed: '<span class="badge badge-viewed">Visualizado</span>',
+        signed: '<span class="badge badge-signed">Assinado</span>'
+      };
+
+      let html = '<div class="contracts-list">';
+      filtered.forEach(c => {
+        const statusKey = getContractStatus(c.status);
+        html += `
+          <div class="contract-card" onclick="showDetails('${c.token}')">
+            <div class="contract-card-info">
+              <h3>${c.client_name}</h3>
+              <p>${c.package_name || 'Pacote'} • ${c.event_date ? formatDate(c.event_date) : '-'}</p>
+              <div style="margin-top:8px;">${badges[statusKey]}</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="contract-card-value">${formatMoney(c.total_value || 0)}</div>
+              <p style="font-size:10px; color:var(--cinza-suave); margin-top:4px; letter-spacing: 1px;">
+                ${c.event_location_name || ''}
+              </p>
+            </div>
+          </div>`;
+      });
+      html += '</div>';
+      listContainer.innerHTML = html;
     }
 
     let currentModalContract = null;
