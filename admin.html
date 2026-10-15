@@ -497,14 +497,46 @@
       }
     }
 
-    window.addEventListener('message', (event) => {
-      if (event.origin !== 'https://entreclicks-gestao.vercel.app') return;
-      if (event.source !== window.parent) return;
-      if (event.data?.type === 'EC_HUB_REQUEST_CONTRACTS') {
-        enviarStatusContratosAoHub();
+    async function enviarContratosAntigosAoHub() {
+      try {
+        const contracts = await supaFetch('contracts?select=token,client_name,event_date,event_location_name,status,hub_event_id&hub_event_id=is.null&order=event_date.asc');
+        if (window.parent !== window) window.parent.postMessage({
+          type:'EC_LEGACY_CONTRACTS_LIST',
+          contracts:(contracts||[]).map(c=>({token:c.token,client_name:c.client_name||'',event_date:c.event_date||'',event_location_name:c.event_location_name||'',status:c.status||'pending',hub_event_id:c.hub_event_id||null}))
+        },'https://entreclicks-gestao.vercel.app');
+      } catch(err) {
+        console.error('Não foi possível listar contratos antigos:',err);
+        showToast('Não foi possível carregar os contratos antigos.');
+      }
+    }
+    async function vincularContratoAntigoAoEvento(token,eventId) {
+      if(!token||!eventId) throw new Error('Contrato ou evento não informado.');
+      const existentes=await supaFetch('contracts?token=eq.'+encodeURIComponent(token)+'&select=token,hub_event_id');
+      if(!existentes.length) throw new Error('Contrato não encontrado.');
+      if(existentes[0].hub_event_id&&String(existentes[0].hub_event_id)!==String(eventId)) throw new Error('Este contrato já está vinculado a outro evento.');
+      const conflito=await supaFetch('contracts?hub_event_id=eq.'+encodeURIComponent(String(eventId))+'&select=token');
+      if(conflito.some(x=>x.token!==token)) throw new Error('Este evento já possui outro contrato vinculado.');
+      const atualizado=await supaFetch('contracts?token=eq.'+encodeURIComponent(token)+'&hub_event_id=is.null','PATCH',{hub_event_id:String(eventId)});
+      if(!atualizado.length) throw new Error('O vínculo não foi salvo. Atualize a lista e tente novamente.');
+    }
+    window.addEventListener('message',async(event)=>{
+      if(event.origin!=='https://entreclicks-gestao.vercel.app'||event.source!==window.parent) return;
+      if(event.data?.type==='EC_HUB_REQUEST_CONTRACTS'){enviarStatusContratosAoHub();return;}
+      if(event.data?.type==='EC_HUB_REQUEST_LEGACY_CONTRACTS'){await enviarContratosAntigosAoHub();return;}
+      if(event.data?.type==='EC_HUB_LINK_LEGACY_CONTRACT'){
+        const {token,event_id:eventId}=event.data;
+        try{
+          await vincularContratoAntigoAoEvento(token,eventId);
+          event.source.postMessage({type:'EC_HUB_LEGACY_LINK_RESULT',success:true,token,event_id:String(eventId)},'https://entreclicks-gestao.vercel.app');
+          await enviarStatusContratosAoHub();
+          await enviarContratosAntigosAoHub();
+        }catch(err){
+          console.error('Erro ao vincular contrato antigo:',err);
+          event.source.postMessage({type:'EC_HUB_LEGACY_LINK_RESULT',success:false,token,event_id:String(eventId),error:err.message||'Erro inesperado.'},'https://entreclicks-gestao.vercel.app');
+        }
         return;
       }
-      if (event.data?.type !== 'EC_HUB_PREFILL_CONTRACT') return;
+      if(event.data?.type!=='EC_HUB_PREFILL_CONTRACT') return;
       receberEventoDoHub(event.data.event);
     });
 
