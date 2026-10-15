@@ -521,14 +521,15 @@
           hub_event_id: String(c.hub_event_id),
           status: c.status || 'pending',
           token: c.token || '',
-          signed_at: c.signed_at || null
+          signed_at: c.signed_at || null,
+          package_name: c.package_name || ''
         }));
       window.parent.postMessage({ type: 'EC_CONTRACT_STATUS_UPDATE', contracts: resumo }, 'https://entreclicks-gestao.vercel.app');
     }
 
     async function enviarStatusContratosAoHub() {
       try {
-        const contracts = await supaFetch('contracts?select=hub_event_id,status,token,signed_at&hub_event_id=not.is.null');
+        const contracts = await supaFetch('contracts?select=hub_event_id,status,token,signed_at,package_name&hub_event_id=not.is.null');
         publicarStatusContratos(contracts);
       } catch (err) {
         console.error('Não foi possível atualizar os status no HUB:', err);
