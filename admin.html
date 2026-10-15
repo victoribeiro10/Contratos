@@ -960,11 +960,11 @@
       const phone = document.getElementById('client_phone').value.replace(/\D/g, '');
 
       const msg = encodeURIComponent(
-        `Olá ${name}! 😊\n\n` +
+        `Olá ${name}!\n\n` +
         `Segue o contrato de prestação de serviços da *Entre Clicks Experiência Fotográfica*\n\n` +
-        `📋 Acesse, leia e assine pelo link:\n${link}\n\n` +
+        `Acesse, leia e assine pelo link:\n${link}\n\n` +
         `Qualquer dúvida estou à disposição!\n` +
-        `*Entre Clicks* 📸✨`
+        `*Entre Clicks*`
       );
 
       const url = phone ? `https://wa.me/55${phone}?text=${msg}` : `https://wa.me/?text=${msg}`;
