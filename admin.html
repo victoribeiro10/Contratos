@@ -13,7 +13,7 @@
     // Permite que o painel funcione dentro do HUB de produção ou de uma prévia
     // do Vercel, sem liberar mensagens de origens desconhecidas.
     const HUB_ORIGIN = (() => {
-      const producao = HUB_ORIGIN;
+      const producao = "https://entreclicks-gestao.vercel.app";
       try {
         const origem = new URL(document.referrer).origin;
         const host = new URL(origem).hostname;
