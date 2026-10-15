@@ -9,6 +9,20 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
+  <script>
+    // Permite que o painel funcione dentro do HUB de produção ou de uma prévia
+    // do Vercel, sem liberar mensagens de origens desconhecidas.
+    const HUB_ORIGIN = (() => {
+      const producao = "https://entreclicks-gestao.vercel.app";
+      try {
+        const origem = new URL(document.referrer).origin;
+        const host = new URL(origem).hostname;
+        if (origem === producao || (host.startsWith('entreclicks-gestao-') && host.endsWith('.vercel.app'))) return origem;
+      } catch (_) {}
+      return producao;
+    })();
+  </script>
+
   <style>
     @keyframes shimmerBar {
       0% { left: -100%; }
@@ -454,7 +468,7 @@
     function doLogout() {
       // O logout é centralizado: o botão retorna à agenda do HUB.
       if (window.parent !== window) {
-        window.parent.postMessage({ type: 'EC_HUB_RETURN_TO_HUB' }, 'https://entreclicks-gestao.vercel.app');
+        window.parent.postMessage({ type: 'EC_HUB_RETURN_TO_HUB' }, HUB_ORIGIN);
       }
     }
 
@@ -521,14 +535,15 @@
           hub_event_id: String(c.hub_event_id),
           status: c.status || 'pending',
           token: c.token || '',
-          signed_at: c.signed_at || null
+          signed_at: c.signed_at || null,
+          package_name: c.package_name || ''
         }));
-      window.parent.postMessage({ type: 'EC_CONTRACT_STATUS_UPDATE', contracts: resumo }, 'https://entreclicks-gestao.vercel.app');
+      window.parent.postMessage({ type: 'EC_CONTRACT_STATUS_UPDATE', contracts: resumo }, HUB_ORIGIN);
     }
 
     async function enviarStatusContratosAoHub() {
       try {
-        const contracts = await supaFetch('contracts?select=hub_event_id,status,token,signed_at&hub_event_id=not.is.null');
+        const contracts = await supaFetch('contracts?select=hub_event_id,status,token,signed_at,package_name&hub_event_id=not.is.null');
         publicarStatusContratos(contracts);
       } catch (err) {
         console.error('Não foi possível atualizar os status no HUB:', err);
@@ -541,7 +556,7 @@
         if (window.parent !== window) window.parent.postMessage({
           type:'EC_LEGACY_CONTRACTS_LIST',
           contracts:(contracts||[]).map(c=>({token:c.token,client_name:c.client_name||'',event_date:c.event_date||'',event_location_name:c.event_location_name||'',status:c.status||'pending',hub_event_id:c.hub_event_id||null}))
-        },'https://entreclicks-gestao.vercel.app');
+        },HUB_ORIGIN);
       } catch(err) {
         console.error('Não foi possível listar contratos antigos:',err);
         showToast('Não foi possível carregar os contratos antigos.');
@@ -558,7 +573,7 @@
       if(!atualizado.length) throw new Error('O vínculo não foi salvo. Atualize a lista e tente novamente.');
     }
     window.addEventListener('message',async(event)=>{
-      if(event.origin!=='https://entreclicks-gestao.vercel.app'||event.source!==window.parent) return;
+      if(event.origin!==HUB_ORIGIN||event.source!==window.parent) return;
       if(event.data?.type==='EC_HUB_AUTHORIZED') {
         hubAuthorized = true;
         sessionStorage.setItem('ec_logged','true');
@@ -577,12 +592,12 @@
         const {token,event_id:eventId}=event.data;
         try{
           await vincularContratoAntigoAoEvento(token,eventId);
-          event.source.postMessage({type:'EC_HUB_LEGACY_LINK_RESULT',success:true,token,event_id:String(eventId)},'https://entreclicks-gestao.vercel.app');
+          event.source.postMessage({type:'EC_HUB_LEGACY_LINK_RESULT',success:true,token,event_id:String(eventId)},HUB_ORIGIN);
           await enviarStatusContratosAoHub();
           await enviarContratosAntigosAoHub();
         }catch(err){
           console.error('Erro ao vincular contrato antigo:',err);
-          event.source.postMessage({type:'EC_HUB_LEGACY_LINK_RESULT',success:false,token,event_id:String(eventId),error:err.message||'Erro inesperado.'},'https://entreclicks-gestao.vercel.app');
+          event.source.postMessage({type:'EC_HUB_LEGACY_LINK_RESULT',success:false,token,event_id:String(eventId),error:err.message||'Erro inesperado.'},HUB_ORIGIN);
         }
         return;
       }
@@ -593,7 +608,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       checkLogin();
       if (window.parent !== window) {
-        window.parent.postMessage({ type: 'EC_HUB_AUTH_REQUEST' }, 'https://entreclicks-gestao.vercel.app');
+        window.parent.postMessage({ type: 'EC_HUB_AUTH_REQUEST' }, HUB_ORIGIN);
       }
     });
 
