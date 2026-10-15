@@ -402,6 +402,11 @@
         errEl.style.display = 'none';
         checkLogin();
         updateResumo();
+        if (pendingHubEvent) {
+          const eventoPendente = pendingHubEvent;
+          pendingHubEvent = null;
+          preencherContratoComEventoHub(eventoPendente);
+        }
       } else {
         errEl.style.display = 'block';
         document.getElementById('login-password').value = '';
@@ -413,6 +418,40 @@
       sessionStorage.removeItem('ec_logged');
       checkLogin();
     }
+
+    // Integração simples com o HUB: recebe dados somente da origem oficial da agenda.
+    let pendingHubEvent = null;
+
+    function receberEventoDoHub(evento) {
+      if (!evento || typeof evento !== 'object') return;
+      if (sessionStorage.getItem('ec_logged') !== 'true') {
+        pendingHubEvent = evento;
+        return;
+      }
+      preencherContratoComEventoHub(evento);
+    }
+
+    function preencherContratoComEventoHub(evento) {
+      editingContract = null;
+      clearForm();
+      document.getElementById('client_name').value = evento.cliente || '';
+      document.getElementById('client_phone').value = evento.telefone || '';
+      document.getElementById('event_date').value = evento.data || '';
+      document.getElementById('event_time_start').value = evento.inicio || '';
+      document.getElementById('event_time_end').value = evento.termino || '';
+      document.getElementById('event_location_name').value = evento.local || '';
+      // O pacote e os valores são confirmados manualmente para evitar divergência
+      // entre a tabela de preços da agenda e os pacotes cadastrados no contrato.
+      showTab('create');
+      showToast('Dados do evento importados. Confira os dados e selecione o pacote.');
+    }
+
+    window.addEventListener('message', (event) => {
+      if (event.origin !== 'https://entreclicks-gestao.vercel.app') return;
+      if (event.source !== window.parent) return;
+      if (event.data?.type !== 'EC_HUB_PREFILL_CONTRACT') return;
+      receberEventoDoHub(event.data.event);
+    });
 
     document.addEventListener('DOMContentLoaded', () => {
       checkLogin();
