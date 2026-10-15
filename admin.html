@@ -439,6 +439,7 @@
         existentes = await supaFetch(`contracts?hub_event_id=eq.${encodeURIComponent(currentHubEventId)}&select=*`);
       } catch (err) {
         console.error('Não foi possível verificar o vínculo do contrato:', err);
+        currentHubEventId = null;
         showToast('Não consegui verificar se este evento já tem contrato. Tente novamente.');
         return;
       }
@@ -448,6 +449,7 @@
         if (contratoExistente.status === 'signed') {
           currentHubEventId = String(evento.id);
           showToast('Este evento já tem contrato assinado. Não será criado outro.');
+          currentHubEventId = null;
           showDetails(contratoExistente.token);
           return;
         }
@@ -779,6 +781,7 @@
       if (!confirm('Cancelar edição? As alterações não serão salvas.')) return;
 
       editingContract = null;
+      currentHubEventId = null;
       document.getElementById('edit-banner').style.display = 'none';
       document.getElementById('btn-gerar').textContent = 'Gerar Contrato';
       clearForm();
