@@ -182,16 +182,17 @@
         <div class="card">
           <div class="card-title"><div class="icon">👤</div> Contratante</div>
           <div class="form-group">
-            <label>Nome Completo *</label>
+            <label id="client_name_label">Nome Completo *</label>
             <input type="text" id="client_name" placeholder="Nome do contratante">
+            <div style="margin-top:12px"><label for="client_type">Tipo de contratante</label><select id="client_type" onchange="atualizarTipoContratante()"><option value="pf">Pessoa física (CPF)</option><option value="pj">Pessoa jurídica (CNPJ)</option></select></div>
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label>CPF</label>
+              <label id="client_document_label">CPF</label>
               <input type="text" id="client_cpf"
                 placeholder="000.000.000-00"
                 maxlength="14"
-                oninput="mascaraCPF(this)">
+                oninput="mascaraDocumentoContratante(this)">
             </div>
             
             <div class="form-group">
@@ -770,6 +771,7 @@
     function clearForm() {
       document.getElementById('client_name').value = '';
       document.getElementById('client_cpf').value = '';
+      document.getElementById('client_type').value = 'pf'; atualizarTipoContratante();
       document.getElementById('client_phone').value = '';
         document.getElementById('client_address').value = '';
       document.getElementById('client_city').value = '';
@@ -811,6 +813,7 @@
       // Preenche o formulário com os dados do contrato
       document.getElementById('client_name').value = contract.client_name || '';
       document.getElementById('client_cpf').value = contract.client_cpf || '';
+      document.getElementById('client_type').value = (contract.client_cpf || '').replace(/\D/g,'').length > 11 ? 'pj' : 'pf'; atualizarTipoContratante();
       document.getElementById('client_phone').value = contract.client_phone || '';
         document.getElementById('client_address').value = contract.client_address || '';
       document.getElementById('client_city').value = contract.client_city || '';
@@ -891,7 +894,10 @@
       const pkgVal = parseFloat(document.getElementById('package_value').value);
       const eventDate = document.getElementById('event_date').value;
 
-      if (!name) { showToast('Preencha o nome do contratante'); return; }
+      if (!name) { showToast('Preencha o nome ou razão social do contratante'); return; }
+      const documento = document.getElementById('client_cpf').value.replace(/\D/g,'');
+      const tipo = document.getElementById('client_type').value;
+      if (documento && documento.length !== (tipo === 'pj' ? 14 : 11)) { showToast('Confira o '+(tipo === 'pj' ? 'CNPJ' : 'CPF')+' informado'); return; }
       if (!pkgVal) { showToast('Preencha o valor do pacote'); return; }
       if (!eventDate) { showToast('Preencha a data do evento'); return; }
 
@@ -1450,8 +1456,9 @@
 
       addSpace(5);
       addTitle('DADOS DO(A) CONTRATANTE');
-      addKeyValue('Nome', c.client_name);
-      addKeyValue('CPF', c.client_cpf);
+      const pessoaJuridica = (c.client_cpf || '').replace(/\D/g, '').length > 11;
+      addKeyValue(pessoaJuridica ? 'Razão Social' : 'Nome', c.client_name);
+      addKeyValue(pessoaJuridica ? 'CNPJ' : 'CPF', c.client_cpf);
       addKeyValue('Contato', c.client_phone);
         addKeyValue('Endereço', c.client_address);
       addKeyValue('Cidade', c.client_city);
@@ -1639,6 +1646,23 @@
 // MÁSCARAS AUTOMÁTICAS (CPF E TELEFONE)
 // ============================================================
 
+function atualizarTipoContratante() {
+    const pj = document.getElementById('client_type').value === 'pj';
+    document.getElementById('client_name_label').textContent = pj ? 'Razão Social *' : 'Nome Completo *';
+    document.getElementById('client_name').placeholder = pj ? 'Razão social da empresa' : 'Nome do contratante';
+    document.getElementById('client_document_label').textContent = pj ? 'CNPJ' : 'CPF';
+    const doc = document.getElementById('client_cpf');
+    doc.placeholder = pj ? '00.000.000/0000-00' : '000.000.000-00';
+    doc.maxLength = pj ? 18 : 14;
+    if (doc.value.replace(/\D/g,'').length > (pj ? 14 : 11)) doc.value = '';
+    mascaraDocumentoContratante(doc);
+}
+function mascaraDocumentoContratante(input) {
+    if (document.getElementById('client_type').value !== 'pj') return mascaraCPF(input);
+    let v = input.value.replace(/\D/g,'').slice(0,14);
+    v = v.replace(/^(\d{2})(\d)/,'$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3').replace(/\.(\d{3})(\d)/,'.$1/$2').replace(/(\d{4})(\d)/,'$1-$2');
+    input.value = v;
+}
 function mascaraCPF(input) {
     let v = input.value.replace(/\D/g, ""); // Remove tudo o que não é dígito
     if (v.length > 11) v = v.substring(0, 11); // Limita a 11 números
